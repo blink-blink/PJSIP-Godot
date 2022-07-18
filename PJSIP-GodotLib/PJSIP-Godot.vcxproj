@@ -89,7 +89,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\libraries and others\godot-cpp\include\core;..\..\libraries and others\godot-cpp\include\gen;..\..\libraries and others\godot-cpp\godot-headers;D:\Documents\GodotGames\pjproject-2.12.1\pjlib\include;D:\Documents\GodotGames\pjproject-2.12.1\pjlib-util\include;D:\Documents\GodotGames\pjproject-2.12.1\pjnath\include;D:\Documents\GodotGames\pjproject-2.12.1\pjmedia\include;D:\Documents\GodotGames\pjproject-2.12.1\pjsip\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\libraries and others\godot-cpp\include\core;..\..\libraries and others\godot-cpp\include\gen;..\..\libraries and others\godot-cpp\godot-headers;..\pjproject-2.12.1\pjlib\include;..\pjproject-2.12.1\pjlib-util\include;..\pjproject-2.12.1\pjnath\include;..\pjproject-2.12.1\pjmedia\include;..\pjproject-2.12.1\pjsip\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
