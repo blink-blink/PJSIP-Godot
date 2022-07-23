@@ -28,7 +28,11 @@ void PJSIP_AudioStream::_ready()
 
 void PJSIP_AudioStream::_process(float delta)
 {
-	//fill_buffer();
+	buffer += delta;
+	if (buffer >= 0.05){
+		fill_buffer();
+		buffer = 0;
+	}
 }
 
 void PJSIP_AudioStream::_physics_process(float delta)
@@ -53,14 +57,15 @@ void PJSIP_AudioStream::fill_buffer()
 	}
 }
 
-void PJSIP_AudioStream::make_call(godot::String uri, godot::AudioStreamSample* stream)
+void PJSIP_AudioStream::make_call(godot::String uri, AudioStreamGeneratorPlayback* stream)
 {
 	Godot::print("making call");
 
 	MyCall* call = pi->make_call(uri.alloc_c_string());
 	CallStreamPair csp = CallStreamPair(call, stream);
 	callStreamPair.push_back(csp);
-	//csp.frames_to_stream();
+	Godot::print("call stream pair created");
+	csp.frames_to_stream();
 }
 
 void PJSIP_AudioStream::hangup_all_calls()

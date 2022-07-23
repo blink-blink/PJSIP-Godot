@@ -591,7 +591,7 @@ void AudioMediaStream::createMediaStream(pjsua_call_id id)
                           // PJMEDIA_MEM_NO_LOOP,
                           &stream_port); //The return port}
     pjmedia_mem_player_set_eof_cb(stream_port, this, AudioMediaStream::processFrames);
-    // pjmedia_mem_player_set_eof_cb2(stream_port, this, AudioMediaStream::processFrames);
+    //pjmedia_mem_player_set_eof_cb2(stream_port, this, AudioMediaStream::processFrames);
     registerMediaPort2(stream_port, pool);
 }
 

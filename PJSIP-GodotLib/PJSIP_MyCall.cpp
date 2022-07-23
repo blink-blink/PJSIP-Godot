@@ -1,4 +1,5 @@
 #include "PJSIP_Common.h"
+#include <fstream>
 
 void MyCall::onCallState(OnCallStateParam& prm)
 {
@@ -37,24 +38,56 @@ void MyCall::onCallMediaState(OnCallMediaStateParam& prm)
     // This will connect the wav file to the call audio media
     cap_dev_med.startTransmit(aud_med);
 
+
+    // And this will connect the call audio media to the sound device/speaker
+    //aud_med.startTransmit(play_dev_med);
+
+    /*if (!pcm_stream) {
+        pcm_stream = new AudioMediaStream();
+        pcm_stream->createMediaStream(ci.id);
+        pcm_stream->startTransmit(aud_med);
+    }*/
+
     //this will connect the call audio media to the stream
-    /*if (!pcm_capture) {
+    if (!pcm_capture) {
         std::cout << "audio media connected to stream" << std::endl;
         pcm_capture = new AudioMediaCapture();
         pcm_capture->createMediaCapture(ci.id);
+        //aud_med.startTransmit(*pcm_capture);
         aud_med.startTransmit(*pcm_capture);
-    }*/
-    // And this will connect the call audio media to the sound device/speaker
-    aud_med.startTransmit(play_dev_med);
+    }
 }
 
-char* MyCall::getFrames()
+void MyCall::putFrame(char* chunk, size_t datasize)
+{
+    //std::cout << "outgoing frame: " << chunk << "of size: " << strlen(chunk) <<std::endl;
+    if (pcm_stream) {
+        pcm_stream->putFrame(chunk, datasize);
+    }
+}
+
+void MyCall::putFrameAsString(std::string s) {
+    if (pcm_stream) {
+        pcm_stream->putFrameAsString(s);
+    }
+}
+
+void MyCall::getFrames(char** s, size_t* datasize)
 {
     if (pcm_capture) {
-        char* s;
-        size_t datasize;
-        pcm_capture->getFrames(&s, &datasize);
+        pcm_capture->getFrames(s, datasize);
+        //std::cout << "====fetch: " << *datasize << '\n';
+        return;
+    }
+    std::cout << "no pcm capture" << std::endl;
+}
+
+std::string MyCall::getFramesAsString()
+{
+    if (pcm_capture) {
+        std::string s = pcm_capture->getFramesAsString();
         return s;
+        //std::cout << "====fetch: " << s.length() << '\n';
     }
     return '\0';
 }

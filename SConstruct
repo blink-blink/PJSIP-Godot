@@ -15,8 +15,8 @@ opts.Add(PathVariable('target_path', 'The path where the lib is installed.', 'PJ
 opts.Add(PathVariable('target_name', 'The library name.', 'libgdexample', PathVariable.PathAccept))
 
 # Local dependency paths, adapt them to your setup
-godot_headers_path = "..\gdnative_cpp_example\godot-cpp/godot-headers/"
-cpp_bindings_path = "..\gdnative_cpp_example\godot-cpp/"
+godot_headers_path = "../gdnative_cpp_example/godot-cpp/godot-headers/"
+cpp_bindings_path = "../gdnative_cpp_example/godot-cpp/"
 cpp_library = "libgodot-cpp"
 
 # only support 64 at this time..
@@ -81,26 +81,55 @@ env.Append(CPPPATH=['.', godot_headers_path, cpp_bindings_path + 'include/', cpp
 env.Append(LIBPATH=[cpp_bindings_path + 'bin/'])
 env.Append(LIBS=[cpp_library])
 
+
+PJBASE = 'pjproject-2.12.1/'
+TARGET_NAME = 'x86_64-unknown-linux-gnu'
 #pjsua2 library
-env.Append(CPPPATH=['pjproject-2.12.1\pjlib\include'])
-env.Append(CPPPATH=['pjproject-2.12.1\pjlib-util\include'])
-env.Append(CPPPATH=['pjproject-2.12.1\pjnath\include'])
-env.Append(CPPPATH=['pjproject-2.12.1\pjmedia\include'])
-env.Append(CPPPATH=['pjproject-2.12.1\pjsip\include'])
-env.Append(LIBPATH=['.\PJSIP-GodotLib\lib/'])
-env.Append(LIBS=['libpjproject-x86_64-x64-vc14-Release'])
-env.Append(LIBS=['Iphlpapi'])
-env.Append(LIBS=['dsound'])	
-env.Append(LIBS=['dxguid'])
-env.Append(LIBS=['netapi32'])
-env.Append(LIBS=['mswsock'])
-env.Append(LIBS=['ws2_32'])
-env.Append(LIBS=['odbc32'])
-env.Append(LIBS=['odbccp32'])
-env.Append(LIBS=['ole32'])
-env.Append(LIBS=['user32'])
-env.Append(LIBS=['gdi32'])
-env.Append(LIBS=['advapi32'])
+#env.Append(CPPPATH=[PJBASE + 'pjlib/include'])
+#env.Append(CPPPATH=[PJBASE + 'pjlib-util/include'])
+#env.Append(CPPPATH=[PJBASE + 'pjnath/include'])
+#env.Append(CPPPATH=[PJBASE + 'pjmedia/include'])
+#env.Append(CPPPATH=[PJBASE + 'pjsip/include'])
+#env.Append(LIBPATH=[PJBASE+'/pjlib/lib/'])
+#env.Append(LIBPATH=[PJBASE+'/pjlib-util/lib/'])
+#env.Append(LIBPATH=[PJBASE+'/pjmedia/lib/'])
+#env.Append(LIBPATH=[PJBASE+'/pjsip/lib/'])
+if env['platform'] in ('x11', 'linux'):
+    env.Append(LIBPATH=[PJBASE+'/usr/local/lib/'])
+    env.Append(CPPPATH=['/usr/local/include'])
+    env.Append(LIBS=['pjsua2'])
+    env.Append(LIBS=['stdc++'])
+    env.Append(LIBS=['pjsua'])
+    env.Append(LIBS=['pjsip-ua'])
+    env.Append(LIBS=['pjsip-simple'])
+    env.Append(LIBS=['pjsip'])
+    env.Append(LIBS=['pjmedia-codec'])
+    env.Append(LIBS=['pjmedia'])
+    env.Append(LIBS=['pjmedia-videodev'])
+    env.Append(LIBS=['pjmedia-audiodev'])
+    env.Append(LIBS=['pjnath'])
+    env.Append(LIBS=['pjlib-util'])
+    env.Append(LIBS=['pj'])
+elif env['platform'] == "windows":
+    env.Append(CPPPATH=['pjproject-2.12.1\pjlib\include'])
+    env.Append(CPPPATH=['pjproject-2.12.1\pjlib-util\include'])
+    env.Append(CPPPATH=['pjproject-2.12.1\pjnath\include'])
+    env.Append(CPPPATH=['pjproject-2.12.1\pjmedia\include'])
+    env.Append(CPPPATH=['pjproject-2.12.1\pjsip\include'])
+    env.Append(LIBPATH=['.\PJSIP-GodotLib\lib/'])
+    env.Append(LIBS=['libpjproject-x86_64-x64-vc14-Release'])
+    env.Append(LIBS=['Iphlpapi'])
+    env.Append(LIBS=['dsound'])	
+    env.Append(LIBS=['dxguid'])
+    env.Append(LIBS=['netapi32'])
+    env.Append(LIBS=['mswsock'])
+    env.Append(LIBS=['ws2_32'])
+    env.Append(LIBS=['odbc32'])
+    env.Append(LIBS=['odbccp32'])
+    env.Append(LIBS=['ole32'])
+    env.Append(LIBS=['user32'])
+    env.Append(LIBS=['gdi32'])
+    env.Append(LIBS=['advapi32'])
 
 # tweak this if you want to use different folders, or more folders, to store your source code in.
 env.Append(CPPPATH=['PJSIP-GodotLib/'])

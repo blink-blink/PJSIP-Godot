@@ -151,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h" />
+    <ClInclude Include="PJSIP_streamTest.h" />
     <ClInclude Include="PJSIP_Instance.h" />
     <ClInclude Include="PJSIP_Common.h" />
     <ClInclude Include="PJSIP_AudioStream.h" />

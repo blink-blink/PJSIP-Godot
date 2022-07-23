@@ -19,6 +19,16 @@ string PJSIP_Instance::add_account(string username, string password, string doma
     ep_cfg.logConfig.level = loglvl;
     ep.libInit(ep_cfg);
 
+    //prioritize PCMA/8000
+    for (auto codec : ep.codecEnum2()) {
+        int prio = 0;
+        if (codec.codecId.find("PCMA/8000") != std::string::npos) {
+            std::cout << "PCMA/8000 codec found" << "\n";
+            prio = 255;
+        }
+        ep.codecSetPriority(codec.codecId, prio);
+    }
+
     // Transport
     TransportConfig tcfg;
     tcfg.port = port;
@@ -71,6 +81,7 @@ MyCall* PJSIP_Instance::make_call(string uri)
     catch (Error& err) {
         std::cout << "Exception: " << err.info() << std::endl;
     }
+    return NULL;
 }
 
 void PJSIP_Instance::hangup_all_calls()

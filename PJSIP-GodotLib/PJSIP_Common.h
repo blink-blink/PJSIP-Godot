@@ -2,6 +2,15 @@
 #include <iostream>
 #include <pj/file_access.h>
 
+#define CHECK(op)   do { \
+			status = op; \
+			if (status != PJ_SUCCESS) { \
+			    err(#op, status); \
+			    return status; \
+			} \
+		    } \
+		    while (0)
+
 #define THIS_FILE 	"pjsua2_demo.cpp"
 
 using namespace pj;
@@ -52,7 +61,10 @@ public:
     virtual void onCallTransferRequest(OnCallTransferRequestParam& prm);
     virtual void onCallReplaced(OnCallReplacedParam& prm);
     virtual void onCallMediaState(OnCallMediaStateParam& prm);
-    char* getFrames();
+    void putFrame(char* chunk, size_t datasize);
+    void putFrameAsString(std::string s);
+    void getFrames(char** s, size_t* datasize);
+    std::string getFramesAsString();
 };
 
 class MyAccount : public Account
