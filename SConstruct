@@ -53,9 +53,9 @@ elif env['platform'] in ('x11', 'linux'):
     env['target_path'] += 'x11/'
     cpp_library += '.linux'
     if env['target'] in ('debug', 'd'):
-        env.Append(CCFLAGS = ['-fPIC', '-g3','-Og', '-std=c++17'])
+        env.Append(CCFLAGS = ['-fPIC', '-g3','-Og', '-std=c++14'])
     else:
-        env.Append(CCFLAGS = ['-fPIC', '-g','-O3', '-std=c++17',"-Wl,-rpath,/usr/local/lib:/usr/lib/gcc/x86_64-linux-gnu/8/:","-DPJ_AUTOCONF=1", "-DPJ_IS_BIG_ENDIAN=0 ","-DPJ_IS_LITTLE_ENDIAN=1"])
+        env.Append(CCFLAGS = ['-fPIC', '-g','-O3', '-std=c++14',"-DPJ_AUTOCONF=1", "-DPJ_IS_BIG_ENDIAN=0 ","-DPJ_IS_LITTLE_ENDIAN=1"])
 
 elif env['platform'] == "windows":
     env['target_path'] += 'win64/'
