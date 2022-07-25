@@ -8,7 +8,7 @@ void CallStreamPair::interpret_frames(std::string s, godot::PoolVector2Array* d)
 	for (int i = 0; i < s.length(); i += 2) {
 
 		/*convert to signed PCM 16*/
-		INT16 wc = ((s[i + 1] - 0x80) << 8);
+		int16_t wc = ((s[i + 1] - 0x80) << 8);
 		wc += (s[i] - 0x80) - 0x8000;
 
 		/*Convert PCM to float 32*/
@@ -29,10 +29,10 @@ void CallStreamPair::interpret_frames_stereo(std::string s, godot::PoolVector2Ar
 	for (int i = 0; i < s.length(); i += 4) {
 
 		/*convert to signed PCM 16*/
-		INT16 wc1 = ((s[i + 1] - 0x80) << 8);
+		int16_t wc1 = ((s[i + 1] - 0x80) << 8);
 		wc1 += (s[i] - 0x80) - 0x8000;
 
-		INT16 wc2 = ((s[i + 3] - 0x80) << 8);
+		int16_t wc2 = ((s[i + 3] - 0x80) << 8);
 		wc1 += (s[i + 2] - 0x80) - 0x8000;
 
 		/*Convert PCM to float 32*/
