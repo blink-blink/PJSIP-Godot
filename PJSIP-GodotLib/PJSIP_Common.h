@@ -36,9 +36,12 @@ class MyAccount;
 class MyCall : public Call
 {
 private:
+    size_t idx;
+
     MyAccount* myAcc;
     AudioMediaCapture* pcm_capture;
     AudioMediaStream* pcm_stream;
+    static vector<MyCall*> calls;
 
 public:
     MyCall(Account& acc, int call_id = PJSUA_INVALID_ID)
@@ -47,6 +50,9 @@ public:
         pcm_capture = NULL;
         pcm_stream = NULL;
         myAcc = (MyAccount*)&acc;
+
+        idx = calls.size();
+        calls.push_back(this);
     }
 
     ~MyCall()
@@ -57,6 +63,8 @@ public:
             delete pcm_stream;
     }
 
+    size_t get_idx();
+    static MyCall* calls_lookup(size_t call_id);
     virtual void onCallState(OnCallStateParam& prm);
     virtual void onCallTransferRequest(OnCallTransferRequestParam& prm);
     virtual void onCallReplaced(OnCallReplacedParam& prm);

@@ -14,6 +14,10 @@ config/name="PJSIP Godot-test"
 run/main_scene="res://Node.tscn"
 config/icon="res://icon.png"
 
+[audio]
+
+enable_audio_input=true
+
 [input]
 
 left={

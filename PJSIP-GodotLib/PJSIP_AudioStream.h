@@ -11,7 +11,10 @@ struct CallStreamPair
 {
 	MyCall* call;
 	AudioStreamGeneratorPlayback* stream;
+
+	bool stereo = false;
 	//float phase = 0;
+
 	CallStreamPair() {};
 
 	CallStreamPair(MyCall* call, AudioStreamGeneratorPlayback* stream) {
@@ -19,61 +22,18 @@ struct CallStreamPair
 		this->stream = stream;
 	}
 
-	void frames_to_stream() {
-		if (!call->hasMedia()) {
-			Godot::print("no media", &stream);
-			return;
-		}
-		//Godot::print("filling buffer", &stream);
+	void interpret_frames(std::string s, godot::PoolVector2Array* d);
 
-		/* get frames */
-		std::string s = call->getFramesAsString();
+	void interpret_frames_stereo(std::string s, godot::PoolVector2Array* d);
 
-		/*create poolvec2array*/
-		godot::PoolVector2Array d = PoolVector2Array();
+	void frames_to_stream();
 
-		/* get codec data*/
-		/*pjmedia_stream* st;
-		pjmedia_stream_info* sti;
-		pjmedia_stream_get_info(st, sti);
-		pjmedia_codec_info cdi = sti->fmt;
-		pjmedia_codec_param* cdp = sti->param;*/
+	void set_stereo(bool b) {
+		stereo = b;
+	}
 
-		for (int i = 0; i < s.length(); i += 2) {
-
-			/*decoder*/
-			INT16 wc = ((s[i+1]-0x80) << 8);
-			wc += (s[i] - 0x80) -0x8000;
-
-			/*Convert PCM to float 32*/
-			float fc = ((float)wc) / (float)0x8000;
-			if (fc > 1) fc = 1;
-			if (fc < -1) fc = -1;
-
-			d.append(godot::Vector2(1, 1) * fc);
-		}
-		//for (char& c : s) {
-		//	/*float fc = ((float)c) / (float)0x8000;
-		//	if (fc > 1) fc = 1;
-		//	if (fc < -1) fc = -1;*/
-
-		//	INT16 wc = (INT16)(c-0x80) << 8;
-
-		//	/*INT16 wc = (INT16)(c) << 8;
-		//	wc -= 0x8000;*/
-
-		//	//INT16 wc = (INT16)(c);
-
-		//	//float a = (float)(c-0x80) / (float)0x80;
-		//	//std::cout << fc << '\n';
-
-		//	d.append(godot::Vector2(1,1)*wc);
-
-		//	//d.append(godot::Vector2(1, 1) * sin(phase*Math_TAU));
-		//	//phase += 0.01;
-		//}
-
-		stream->push_buffer(d);
+	bool is_stereo() {
+		return stereo;
 	}
 };
 
@@ -98,8 +58,12 @@ public:
 	void queue_free();
 
 	void fill_buffer();
-	void add_account(godot::String username, godot::String password, godot::String domain, int port, int loglvl);
-	void make_call(godot::String uri, AudioStreamGeneratorPlayback* stream);
+	void initialize_endpoint(int port, int loglvl);
+	void add_account(godot::String username, godot::String password, godot::String domain);
+	size_t make_call(godot::String uri, AudioStreamGeneratorPlayback* stream);
 	void hangup_all_calls();
+
+	void push_frame(godot::PoolVector2Array frame, size_t call_id);
+	void push_frame_stereo(godot::PoolVector2Array frame, size_t call_idx);
 };
 

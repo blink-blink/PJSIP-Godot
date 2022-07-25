@@ -27,6 +27,9 @@
     <ClCompile Include="PJSIP_Instance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CallStreamPair.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h">
@@ -42,9 +45,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PJSIP_Instance.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PJSIP_streamTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

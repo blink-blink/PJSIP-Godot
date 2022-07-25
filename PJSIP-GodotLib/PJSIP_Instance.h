@@ -36,7 +36,8 @@ public:
 		if (acc)
 			delete(acc);
 	}
-	string add_account(string username, string password, string domain, int port, int loglvl);
+	void initialize_endpoint(int port, int loglvl);
+	string add_account(string username, string password, string domain);
 	MyCall* make_call(string uri);
 	void hangup_all_calls();
 };

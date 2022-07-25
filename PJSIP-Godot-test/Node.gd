@@ -1,9 +1,16 @@
 extends Node2D
 
 onready var box: RigidBody2D = $RigidBody2D
-onready var asp: AudioStreamPlayer2D = get_node("RigidBody2D/AudioStreamPlayer")
+onready var asp: AudioStreamPlayer2D = get_node("RigidBody2D/AudioStreamPlayer2d")
+
 onready var pjsip = $PJSIPTest
+
 var ms = 500
+
+var phase = 0
+
+#this is a pointer casted as uint8_t
+var this_call = null
 
 var is_calling = false
 
@@ -16,8 +23,11 @@ func _ready():
 	#var domain = "localhost";
 	#var port = 5060;
 
+	print("initalizing endpoint...");
+	pjsip.initialize_endpoint(port,1)
+	
 	print("adding account: "+username);
-	pjsip.add_account(username, password, domain, port, 1);
+	pjsip.add_account(username, password, domain);	
 
 func _unhandled_input(event):
 	if event.is_action_pressed("ui_accept"):
@@ -42,8 +52,26 @@ func call_test():
 	asp.stream.mix_rate = 8000
 	
 	#insert call-audiostreamsample pair
-	pjsip.make_call(call_uri,asp.get_stream_playback());
+	this_call = pjsip.make_call(call_uri,asp.get_stream_playback());
+	print(this_call)
 	asp.play()
+
+func _process(delta):
+	var idx = AudioServer.get_bus_index("Microphone")
+	var audioeffectcapture:AudioEffectCapture = AudioServer.get_bus_effect(idx,0)
+	#print(audioeffectcapture)
+	
+	var buffer = audioeffectcapture.get_buffer(2000)
+	#print(buffer)
+	
+#	var buffer: PoolVector2Array
+#	for i in range(0,120):
+#		buffer.append(Vector2(1,1)*sin(phase*TAU))
+#		phase = fmod(phase + 440.0/22050, 1.0)
+#		#phase += delta*0.001
+			
+	#print(buffer)
+	pjsip.push_frame(buffer,this_call)
 
 func _physics_process(delta):
 	box.applied_force.x = 0

@@ -4,39 +4,59 @@
 #define ERROR_CODE_0 "Account Exists"
 #define ERROR_CODE_1 "Account Failed"
 
-string PJSIP_Instance::add_account(string username, string password, string domain, int port, int loglvl)
+void PJSIP_Instance::initialize_endpoint(int port, int loglvl)
+{
+    if (ep.libGetState() > PJSUA_STATE_CREATED) {
+        std::cout << "Endpoint lib past created state" << '\n';
+        return;
+    }
+
+    try {
+
+        //register thread
+        /*pj_thread_desc desc;
+        pj_thread_t* this_thread;
+        pj_bzero(desc, sizeof(desc));
+        pj_thread_register("thread", desc, &this_thread);*/
+        ep.libRegisterThread("epInit");
+
+        // Init library
+        EpConfig ep_cfg;
+        ep_cfg.logConfig.level = loglvl;
+        ep.libInit(ep_cfg);
+
+        //prioritize speex/8000
+        string codecID = "speex/8000";
+        for (auto codec : ep.codecEnum2()) {
+            int prio = 0;
+            if (codec.codecId.find(codecID) != std::string::npos) {
+                std::cout << codecID << " codec found" << "\n";
+                prio = 255;
+            }
+            ep.codecSetPriority(codec.codecId, prio);
+        }
+
+        // Transport
+        TransportConfig tcfg;
+        tcfg.port = port;
+        ep.transportCreate(PJSIP_TRANSPORT_UDP, tcfg);
+
+        // Start library
+        ep.libStart();
+        std::cout << "*** PJSUA2 STARTED ***" << std::endl;
+
+    }
+    catch (Error err) {
+        std::cout << "Exception: " << err.info() << std::endl;
+    }
+}
+
+string PJSIP_Instance::add_account(string username, string password, string domain)
 {
     std::cout << ("PJSIP_Instance::add_account: " + username) << std::endl;
 
     //register thread
-    pj_thread_desc desc;
-    pj_thread_t* this_thread;
-    pj_bzero(desc, sizeof(desc));
-    pj_thread_register("thread", desc, &this_thread);
-
-    // Init library
-    EpConfig ep_cfg;
-    ep_cfg.logConfig.level = loglvl;
-    ep.libInit(ep_cfg);
-
-    //prioritize PCMA/8000
-    for (auto codec : ep.codecEnum2()) {
-        int prio = 0;
-        if (codec.codecId.find("PCMA/8000") != std::string::npos) {
-            std::cout << "PCMA/8000 codec found" << "\n";
-            prio = 255;
-        }
-        ep.codecSetPriority(codec.codecId, prio);
-    }
-
-    // Transport
-    TransportConfig tcfg;
-    tcfg.port = port;
-    ep.transportCreate(PJSIP_TRANSPORT_UDP, tcfg);
-
-    // Start library
-    ep.libStart();
-    std::cout << "*** PJSUA2 STARTED ***" << std::endl;
+    ep.libRegisterThread("addAccount");
 
     // Add account
     AccountConfig acc_cfg;
@@ -63,10 +83,11 @@ MyCall* PJSIP_Instance::make_call(string uri)
 
     try {
         //register thread
-        pj_thread_desc desc;
+        /*pj_thread_desc desc;
         pj_thread_t* this_thread;
         pj_bzero(desc, sizeof(desc));
-        pj_thread_register("thread", desc, &this_thread);
+        pj_thread_register("thread", desc, &this_thread);*/
+        ep.libRegisterThread("make call");
 
         MyCall* call = new MyCall(*acc);
         acc->calls.push_back(call);
@@ -87,12 +108,17 @@ MyCall* PJSIP_Instance::make_call(string uri)
 void PJSIP_Instance::hangup_all_calls()
 {
     std::cout << ("PJSIP_Instance::hanging up call") << std::endl;
+    try {
+        //register thread
+        /*pj_thread_desc desc;
+        pj_thread_t* this_thread;
+        pj_bzero(desc, sizeof(desc));
+        pj_thread_register("thread", desc, &this_thread);*/
+        ep.libRegisterThread("hangup");
 
-    //register thread
-    pj_thread_desc desc;
-    pj_thread_t* this_thread;
-    pj_bzero(desc, sizeof(desc));
-    pj_thread_register("thread", desc, &this_thread);
-
-    ep.hangupAllCalls();
+        ep.hangupAllCalls();
+    }
+    catch (Error err) {
+        std::cout << "Exception: " << err.info() << std::endl;
+    }
 }

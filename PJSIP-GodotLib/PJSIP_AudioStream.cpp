@@ -8,9 +8,12 @@ void PJSIP_AudioStream::_register_methods()
 	register_method("_physics_process", &PJSIP_AudioStream::_physics_process);
 	register_method("queue_free", &PJSIP_AudioStream::queue_free);
 
+	register_method("initialize_endpoint", &PJSIP_AudioStream::initialize_endpoint);
 	register_method("add_account", &PJSIP_AudioStream::add_account);
 	register_method("make_call", &PJSIP_AudioStream::make_call);
 	register_method("hangup_all_calls", &PJSIP_AudioStream::hangup_all_calls);
+	register_method("push_frame", &PJSIP_AudioStream::push_frame);
+	register_method("push_frame_stereo", &PJSIP_AudioStream::push_frame_stereo);
 
 	register_property("username", &PJSIP_AudioStream::username, godot::String());
 }
@@ -53,19 +56,33 @@ void PJSIP_AudioStream::fill_buffer()
 	//for every calls, stream to corresponding godot::audiostream
 	for (auto& csp : callStreamPair)
 	{
-		csp.frames_to_stream();
+		if (csp.call->isActive()) {
+			csp.frames_to_stream();
+		}
 	}
 }
 
-void PJSIP_AudioStream::make_call(godot::String uri, AudioStreamGeneratorPlayback* stream)
+void PJSIP_AudioStream::initialize_endpoint(int port, int loglvl)
+{
+	pi->initialize_endpoint(port, loglvl);
+}
+
+size_t PJSIP_AudioStream::make_call(godot::String uri, AudioStreamGeneratorPlayback* stream)
 {
 	Godot::print("making call");
 
 	MyCall* call = pi->make_call(uri.alloc_c_string());
-	CallStreamPair csp = CallStreamPair(call, stream);
-	callStreamPair.push_back(csp);
-	Godot::print("call stream pair created");
-	csp.frames_to_stream();
+	if (call){
+		CallStreamPair csp = CallStreamPair(call, stream);
+		callStreamPair.push_back(csp);
+		Godot::print("call stream pair created");
+		csp.frames_to_stream();
+		std::cout << "call at: " << call->get_idx() << '\n';
+		return call->get_idx();
+	}
+	else 
+		Godot::print("Error in making call");
+	return NULL;
 }
 
 void PJSIP_AudioStream::hangup_all_calls()
@@ -74,7 +91,77 @@ void PJSIP_AudioStream::hangup_all_calls()
 	pi->hangup_all_calls();
 }
 
-void PJSIP_AudioStream::add_account(godot::String username, godot::String password, godot::String domain, int port, int loglvl)
+void PJSIP_AudioStream::push_frame(godot::PoolVector2Array frame, size_t call_idx)
 {
-	pi->add_account(username.alloc_c_string(), password.alloc_c_string(), domain.alloc_c_string(), port, loglvl);
+	MyCall* call = MyCall::calls_lookup(call_idx);
+	if (!call) return;
+
+	std::string s;
+
+	for (int i = 0; i < frame.size(); i++) 
+	{
+
+		//since mono just get x
+		float fc = frame[i].x;
+
+		// float 32 to PCM16
+		int16_t wc = (int16_t)(fc * 0x8000);
+
+		//lil endian
+		char c = (wc >> 0) & 0xFF;
+		s += c;
+		c = (wc >> 8) & 0xFF;
+		s += c;
+
+	}
+	//std::cout << "string built \n";
+	//push frames to call
+	call->putFrameAsString(s);
+}
+
+void PJSIP_AudioStream::push_frame_stereo(godot::PoolVector2Array frame, size_t call_idx)
+{
+	//std::cout << "pushing frames stereo \n";
+	MyCall* call = MyCall::calls_lookup(call_idx);
+	if (!call) return;
+
+	std::string s;
+	//std::cout << "===buffer: " << frame.size() << '\n';
+
+	for (int i = 0; i < frame.size(); i ++) {
+
+		//since stereo get xy
+		float fc1 = frame[i].x;
+		float fc2 = frame[i].y;
+		
+		//std::cout << fc1 << fc2 << '\n';
+
+		// float 32 to PCM
+		INT16 wc1 = (INT16)(fc1 * 0x8000);
+		INT16 wc2 = (INT16)(fc2 * 0x8000);
+
+		//std::cout << wc1 << wc2 << '\n';
+
+		//append string (little endian)
+		char c = (wc1 >> 0) & 0xFF;
+		s += c;
+		c = (wc1 >> 8) & 0xFF;
+		s += c;
+
+
+		c = (wc2 >> 0) & 0xFF;
+		s += c;
+		c = (wc2 >> 8) & 0xFF;
+		s += c;
+	}
+
+	//std::cout << "frame built: " << s << '\n';
+
+	//push frames to call
+	call->putFrameAsString(s);
+}
+
+void PJSIP_AudioStream::add_account(godot::String username, godot::String password, godot::String domain)
+{
+	pi->add_account(username.alloc_c_string(), password.alloc_c_string(), domain.alloc_c_string());
 }

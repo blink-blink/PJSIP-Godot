@@ -1,6 +1,19 @@
 #include "PJSIP_Common.h"
 #include <fstream>
 
+vector<MyCall*> MyCall::calls;
+
+size_t MyCall::get_idx()
+{
+    return idx;
+}
+
+MyCall* MyCall::calls_lookup(size_t call_id)
+{
+    if (calls.size() <= 0) return NULL;
+    return calls[call_id];
+}
+
 void MyCall::onCallState(OnCallStateParam& prm)
 {
     PJ_UNUSED_ARG(prm);
@@ -10,9 +23,9 @@ void MyCall::onCallState(OnCallStateParam& prm)
         << "]" << std::endl;
 
     if (ci.state == PJSIP_INV_STATE_DISCONNECTED) {
-        //myAcc->removeCall(this);
+        myAcc->removeCall(this);
         /* Delete the call */
-        //delete this;
+        delete this;
     }
 }
 
@@ -36,17 +49,18 @@ void MyCall::onCallMediaState(OnCallMediaStateParam& prm)
     }
 
     // This will connect the wav file to the call audio media
-    cap_dev_med.startTransmit(aud_med);
+    //cap_dev_med.startTransmit(aud_med);
 
 
     // And this will connect the call audio media to the sound device/speaker
     //aud_med.startTransmit(play_dev_med);
 
-    /*if (!pcm_stream) {
+    if (!pcm_stream) {
         pcm_stream = new AudioMediaStream();
         pcm_stream->createMediaStream(ci.id);
         pcm_stream->startTransmit(aud_med);
-    }*/
+        //pcm_stream->startTransmit(play_dev_med);
+    }
 
     //this will connect the call audio media to the stream
     if (!pcm_capture) {
@@ -54,7 +68,7 @@ void MyCall::onCallMediaState(OnCallMediaStateParam& prm)
         pcm_capture = new AudioMediaCapture();
         pcm_capture->createMediaCapture(ci.id);
         //aud_med.startTransmit(*pcm_capture);
-        aud_med.startTransmit(*pcm_capture);
+        pcm_stream->startTransmit(*pcm_capture);
     }
 }
 
@@ -69,6 +83,7 @@ void MyCall::putFrame(char* chunk, size_t datasize)
 void MyCall::putFrameAsString(std::string s) {
     if (pcm_stream) {
         pcm_stream->putFrameAsString(s);
+        //std::cout << "frames pushed to stream" << '\n';
     }
 }
 
@@ -86,8 +101,8 @@ std::string MyCall::getFramesAsString()
 {
     if (pcm_capture) {
         std::string s = pcm_capture->getFramesAsString();
-        return s;
         //std::cout << "====fetch: " << s.length() << '\n';
+        return s;
     }
     return '\0';
 }

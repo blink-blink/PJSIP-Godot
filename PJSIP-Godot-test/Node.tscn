@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://PJSIP_AudioStream.gdns" type="Script" id=1]
 [ext_resource path="res://Node.gd" type="Script" id=2]
@@ -10,6 +10,8 @@
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 314.5, 10 )
 
+[sub_resource type="AudioStreamMicrophone" id=4]
+
 [node name="Node" type="Node2D"]
 script = ExtResource( 2 )
 
@@ -20,9 +22,9 @@ script = ExtResource( 1 )
 
 [node name="RigidBody2D" type="RigidBody2D" parent="."]
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer2D" parent="RigidBody2D"]
+[node name="AudioStreamPlayer2d" type="AudioStreamPlayer2D" parent="RigidBody2D"]
 stream = SubResource( 3 )
-volume_db = 0.386
+bus = "Calls"
 
 [node name="Polygon2D" type="Polygon2D" parent="RigidBody2D"]
 polygon = PoolVector2Array( 443, 302, 463, 302, 463, 322, 443, 322 )
@@ -40,3 +42,9 @@ polygon = PoolVector2Array( 192, 389, 825, 393, 825, 412, 196, 412 )
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
 position = Vector2( 511, 402 )
 shape = SubResource( 2 )
+
+[node name="AudioStreamPlayerMic" type="AudioStreamPlayer" parent="."]
+stream = SubResource( 4 )
+volume_db = 9.487
+autoplay = true
+bus = "Microphone"

@@ -148,10 +148,10 @@
     <ClCompile Include="PJSIP_AudioStream.cpp" />
     <ClCompile Include="PJSIP_MyCall.cpp" />
     <ClCompile Include="PJSIP_Instance.cpp" />
+    <ClCompile Include="CallStreamPair.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h" />
-    <ClInclude Include="PJSIP_streamTest.h" />
     <ClInclude Include="PJSIP_Instance.h" />
     <ClInclude Include="PJSIP_Common.h" />
     <ClInclude Include="PJSIP_AudioStream.h" />
