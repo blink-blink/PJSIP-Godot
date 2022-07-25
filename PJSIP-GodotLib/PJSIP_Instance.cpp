@@ -14,11 +14,10 @@ void PJSIP_Instance::initialize_endpoint(int port, int loglvl)
     try {
 
         //register thread
-        /*pj_thread_desc desc;
+        pj_thread_desc desc;
         pj_thread_t* this_thread;
         pj_bzero(desc, sizeof(desc));
-        pj_thread_register("thread", desc, &this_thread);*/
-        ep.libRegisterThread("epInit");
+        pj_thread_register("thread", desc, &this_thread);
 
         // Init library
         EpConfig ep_cfg;
@@ -56,11 +55,14 @@ string PJSIP_Instance::add_account(string username, string password, string doma
     std::cout << ("PJSIP_Instance::add_account: " + username) << std::endl;
 
     //register thread
-    ep.libRegisterThread("addAccount");
+    pj_thread_desc desc;
+    pj_thread_t* this_thread;
+    pj_bzero(desc, sizeof(desc));
+    pj_thread_register("thread", desc, &this_thread);
 
     // Add account
     AccountConfig acc_cfg;
-    acc_cfg.idUri = "sip:"+username+"@"+domain;
+    acc_cfg.idUri = "sip:" + username + "@" + domain;
 
     AuthCredInfo aci("digest", "*", username, 0, password);
 
@@ -79,15 +81,14 @@ string PJSIP_Instance::add_account(string username, string password, string doma
 
 MyCall* PJSIP_Instance::make_call(string uri)
 {
-    std::cout<<("PJSIP_Instance::make call: " + uri) << std::endl;
+    std::cout << ("PJSIP_Instance::make call: " + uri) << std::endl;
 
     try {
         //register thread
-        /*pj_thread_desc desc;
+        pj_thread_desc desc;
         pj_thread_t* this_thread;
         pj_bzero(desc, sizeof(desc));
-        pj_thread_register("thread", desc, &this_thread);*/
-        ep.libRegisterThread("make call");
+        pj_thread_register("thread", desc, &this_thread);
 
         MyCall* call = new MyCall(*acc);
         acc->calls.push_back(call);
@@ -110,11 +111,10 @@ void PJSIP_Instance::hangup_all_calls()
     std::cout << ("PJSIP_Instance::hanging up call") << std::endl;
     try {
         //register thread
-        /*pj_thread_desc desc;
+        pj_thread_desc desc;
         pj_thread_t* this_thread;
         pj_bzero(desc, sizeof(desc));
-        pj_thread_register("thread", desc, &this_thread);*/
-        ep.libRegisterThread("hangup");
+        pj_thread_register("thread", desc, &this_thread);
 
         ep.hangupAllCalls();
     }

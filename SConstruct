@@ -14,9 +14,10 @@ opts.Add(BoolVariable('use_llvm', "Use the LLVM / Clang compiler", 'no'))
 opts.Add(PathVariable('target_path', 'The path where the lib is installed.', 'PJSIP-Godot-test/bin/'))
 opts.Add(PathVariable('target_name', 'The library name.', 'libgdexample', PathVariable.PathAccept))
 
+
 # Local dependency paths, adapt them to your setup
-godot_headers_path = "../gdnative_cpp_example/godot-cpp/godot-headers/"
-cpp_bindings_path = "../gdnative_cpp_example/godot-cpp/"
+godot_headers_path = "godot-cpp/godot-headers/"
+cpp_bindings_path = "godot-cpp/"
 cpp_library = "libgodot-cpp"
 
 # only support 64 at this time..
@@ -54,7 +55,7 @@ elif env['platform'] in ('x11', 'linux'):
     if env['target'] in ('debug', 'd'):
         env.Append(CCFLAGS = ['-fPIC', '-g3','-Og', '-std=c++17'])
     else:
-        env.Append(CCFLAGS = ['-fPIC', '-g','-O3', '-std=c++17'])
+        env.Append(CCFLAGS = ['-fPIC', '-g','-O3', '-std=c++17',"-Wl,-rpath,/usr/local/lib:/usr/lib/gcc/x86_64-linux-gnu/8/:","-DPJ_AUTOCONF=1", "-DPJ_IS_BIG_ENDIAN=0 ","-DPJ_IS_LITTLE_ENDIAN=1"])
 
 elif env['platform'] == "windows":
     env['target_path'] += 'win64/'
@@ -95,10 +96,11 @@ TARGET_NAME = 'x86_64-unknown-linux-gnu'
 #env.Append(LIBPATH=[PJBASE+'/pjmedia/lib/'])
 #env.Append(LIBPATH=[PJBASE+'/pjsip/lib/'])
 if env['platform'] in ('x11', 'linux'):
-    env.Append(LIBPATH=[PJBASE+'/usr/local/lib/'])
-    env.Append(CPPPATH=['/usr/local/include'])
+    env.Append(LIBPATH=['/usr/local/lib/'])
+    env.Append(CPPPATH=['/usr/local/include/'])
     env.Append(LIBS=['pjsua2'])
     env.Append(LIBS=['stdc++'])
+    env.Append(LIBS=['gcc'])
     env.Append(LIBS=['pjsua'])
     env.Append(LIBS=['pjsip-ua'])
     env.Append(LIBS=['pjsip-simple'])

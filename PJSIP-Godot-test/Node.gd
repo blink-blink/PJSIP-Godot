@@ -17,7 +17,7 @@ var is_calling = false
 func _ready():
 	#add account
 	var username = "801";
-	var password = "aelhotIQzaoQDY5zfmnP76Xpw";
+	var password = "K4ba6sYSF6hZndrFYKWjQmorG";
 	var domain = "192.168.195.1:5060";
 	var port = 29801;
 	#var domain = "localhost";

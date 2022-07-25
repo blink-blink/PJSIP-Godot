@@ -137,8 +137,8 @@ void PJSIP_AudioStream::push_frame_stereo(godot::PoolVector2Array frame, size_t 
 		//std::cout << fc1 << fc2 << '\n';
 
 		// float 32 to PCM
-		INT16 wc1 = (INT16)(fc1 * 0x8000);
-		INT16 wc2 = (INT16)(fc2 * 0x8000);
+		int16_t wc1 = (int16_t)(fc1 * 0x8000);
+		int16_t wc2 = (int16_t)(fc2 * 0x8000);
 
 		//std::cout << wc1 << wc2 << '\n';
 
