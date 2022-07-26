@@ -1,4 +1,3 @@
-#include "PJSIP_Common.h"
 #include "PJSIP_AudioStream.h"
 
 void MyAccount::removeCall(Call* call)
