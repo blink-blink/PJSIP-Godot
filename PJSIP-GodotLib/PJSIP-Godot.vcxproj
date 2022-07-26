@@ -146,6 +146,7 @@
   <ItemGroup>
     <ClCompile Include="PJSIP-GodotLib.cpp" />
     <ClCompile Include="PJSIP_AudioStream.cpp" />
+    <ClCompile Include="PJSIP_MyAccount.cpp" />
     <ClCompile Include="PJSIP_MyCall.cpp" />
     <ClCompile Include="PJSIP_Instance.cpp" />
     <ClCompile Include="CallStreamPair.cpp" />
