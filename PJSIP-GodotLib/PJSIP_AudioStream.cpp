@@ -183,5 +183,5 @@ void PJSIP_AudioStream::push_frame_stereo(godot::PoolVector2Array frame, size_t 
 
 void PJSIP_AudioStream::add_account(godot::String username, godot::String password, godot::String domain)
 {
-	pi->add_account(username.alloc_c_string(), password.alloc_c_string(), domain.alloc_c_string());
+	pi->add_account(username.alloc_c_string(), password.alloc_c_string(), domain.alloc_c_string(), this);
 }
