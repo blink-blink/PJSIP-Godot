@@ -67,8 +67,8 @@ void MyCall::onCallMediaState(OnCallMediaStateParam& prm)
         std::cout << "audio media connected to stream" << std::endl;
         pcm_capture = new AudioMediaCapture();
         pcm_capture->createMediaCapture(ci.id);
-        //aud_med.startTransmit(*pcm_capture);
-        pcm_stream->startTransmit(*pcm_capture);
+        aud_med.startTransmit(*pcm_capture);
+        //pcm_stream->startTransmit(*pcm_capture);
     }
 }
 

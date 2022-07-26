@@ -2,6 +2,7 @@ extends Node2D
 
 onready var box: RigidBody2D = $RigidBody2D
 onready var asp: AudioStreamPlayer2D = get_node("RigidBody2D/AudioStreamPlayer2d")
+onready var asp2: AudioStreamPlayer2D = get_node("RigidBody2D2/AudioStreamPlayer2d")
 onready var aspic: AudioStreamPlayer = $AudioStreamPlayerIC
 
 onready var pjsip = $PJSIPTest
@@ -9,6 +10,7 @@ onready var pjsip = $PJSIPTest
 var ms = 500
 
 var phase = 0
+var checkerTimer = 0
 
 #this is a pointer casted as uint8_t
 var this_call = null
@@ -18,7 +20,7 @@ var is_calling = false
 func _ready():
 	#add account
 	var username = "801";
-	var password = "K4ba6sYSF6hZndrFYKWjQmorG";
+	var password = "IDm2xg64DCER3j6arR22Tob1d";
 	var domain = "192.168.195.1:5060";
 	var port = 29801;
 	#var domain = "localhost";
@@ -56,10 +58,11 @@ func call_test():
 	
 	#insert call-audiostreamsample pair
 	this_call = pjsip.make_call(call_uri,asp.get_stream_playback());
+	asp2.stream = asp.stream
 	print(this_call)
 	asp.play()
 
-func _process(delta):
+func _process(delta):	
 	var idx = AudioServer.get_bus_index("Microphone")
 	var audioeffectcapture:AudioEffectCapture = AudioServer.get_bus_effect(idx,0)
 	#print(audioeffectcapture)
@@ -75,6 +78,11 @@ func _process(delta):
 			
 	#print(buffer)
 	pjsip.push_frame(buffer,this_call)
+	
+	checkerTimer -= delta
+	if checkerTimer <= 0:
+		checkerTimer = 1;
+		print(aspic.get_stream_playback().get_frames_available())
 
 func _physics_process(delta):
 	box.applied_force.x = 0
@@ -90,5 +98,5 @@ func _physics_process(delta):
 
 
 func _on_PJSIPTest_on_incoming_call(call_idx):
-	print("call received", call_idx)
+	print("call received: ", call_idx)
 	aspic.play()

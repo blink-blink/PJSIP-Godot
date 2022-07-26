@@ -117,6 +117,7 @@ void PJSIP_Instance::hangup_all_calls()
         pj_thread_register("thread", desc, &this_thread);
 
         ep.hangupAllCalls();
+        std::cout << ("Calls successfully hangup") << std::endl;
     }
     catch (pj::Error err) {
         std::cout << "Exception: " << err.info() << std::endl;
