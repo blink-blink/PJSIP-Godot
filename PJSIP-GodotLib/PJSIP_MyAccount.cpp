@@ -31,6 +31,7 @@ void MyAccount::_onIncomingCall(OnIncomingCallParam& iprm)
     calls.push_back(call);
     prm.statusCode = (pjsip_status_code)200;
     call->answer(prm);
-    ASOwner->call_to_buffer_stream(call);   
+
+    ASOwner->call_to_buffer_stream(call);
 }
 

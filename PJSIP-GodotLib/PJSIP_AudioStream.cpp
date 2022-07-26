@@ -14,12 +14,13 @@ void PJSIP_AudioStream::_register_methods()
 	register_method("hangup_all_calls", &PJSIP_AudioStream::hangup_all_calls);
 	register_method("push_frame", &PJSIP_AudioStream::push_frame);
 	register_method("push_frame_stereo", &PJSIP_AudioStream::push_frame_stereo);
+	register_method("buffer_incoming_call_to_stream", &PJSIP_AudioStream::buffer_incoming_call_to_stream);
 
 	//properties
 	register_property("username", &PJSIP_AudioStream::username, godot::String());
 
 	//signals
-	//register_signal<PJSIP_AudioStream>((char*)"on_incoming_call", "call_idx", GODOT_VARIANT_TYPE_INT);
+	register_signal<PJSIP_AudioStream>((char*)"on_incoming_call", "call_idx", GODOT_VARIANT_TYPE_INT);
 }
 
 void PJSIP_AudioStream::_init()
@@ -69,8 +70,16 @@ void PJSIP_AudioStream::buffer_incoming_call_to_stream(AudioStreamGeneratorPlayb
 
 void PJSIP_AudioStream::call_to_buffer_stream(MyCall* call)
 {
-	emit_signal("on_incoming_call", make_CallStreamPair(call, buffer_streams.front()));
-	buffer_streams.erase(buffer_streams.begin());
+
+	if (buffer_streams.size() > 0 ) {
+		std::cout << "emitting on incoming call signal \n";
+		emit_signal("on_incoming_call", make_CallStreamPair(call, buffer_streams.front()));
+		buffer_streams.erase(buffer_streams.begin());
+	}
+	else {
+		Godot::print("Error: Empty AudioStream Buffer");	
+	}
+		
 }
 
 void PJSIP_AudioStream::fill_buffer()

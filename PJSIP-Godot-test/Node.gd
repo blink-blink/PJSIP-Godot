@@ -2,6 +2,7 @@ extends Node2D
 
 onready var box: RigidBody2D = $RigidBody2D
 onready var asp: AudioStreamPlayer2D = get_node("RigidBody2D/AudioStreamPlayer2d")
+onready var aspic: AudioStreamPlayer = $AudioStreamPlayerIC
 
 onready var pjsip = $PJSIPTest
 
@@ -27,7 +28,9 @@ func _ready():
 	pjsip.initialize_endpoint(port,1)
 	
 	print("adding account: "+username);
-	pjsip.add_account(username, password, domain);	
+	pjsip.add_account(username, password, domain);
+	
+	pjsip.buffer_incoming_call_to_stream(aspic.get_stream_playback())
 
 func _unhandled_input(event):
 	if event.is_action_pressed("ui_accept"):
@@ -43,7 +46,7 @@ func _unhandled_input(event):
 		#print(asp.stream.get_data())
 
 func call_test():
-	var call_uri = "sip:805@192.168.195.1:5060";
+	var call_uri = "sip:801@192.168.195.1:5060";
 	#var call_uri = "sip:801@localhost";
 
 	print("testing call on uri: "+call_uri);
@@ -84,3 +87,8 @@ func _physics_process(delta):
 		box.applied_force.x = ms
 	
 	#print(asp.get_stream_playback().get_frames_available())
+
+
+func _on_PJSIPTest_on_incoming_call(call_idx):
+	print("call received", call_idx)
+	aspic.play()
