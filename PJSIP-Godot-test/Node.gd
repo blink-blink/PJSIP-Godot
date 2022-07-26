@@ -43,7 +43,7 @@ func _unhandled_input(event):
 		#print(asp.stream.get_data())
 
 func call_test():
-	var call_uri = "sip:801@192.168.195.1:5060";
+	var call_uri = "sip:805@192.168.195.1:5060";
 	#var call_uri = "sip:801@localhost";
 
 	print("testing call on uri: "+call_uri);

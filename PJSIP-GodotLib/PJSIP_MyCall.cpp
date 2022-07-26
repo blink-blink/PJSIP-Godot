@@ -104,7 +104,7 @@ std::string MyCall::getFramesAsString()
         //std::cout << "====fetch: " << s.length() << '\n';
         return s;
     }
-    return '\0';
+    return "\0";
 }
 
 void MyCall::onCallTransferRequest(OnCallTransferRequestParam& prm)

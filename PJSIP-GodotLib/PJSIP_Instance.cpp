@@ -45,12 +45,12 @@ void PJSIP_Instance::initialize_endpoint(int port, int loglvl)
         std::cout << "*** PJSUA2 STARTED ***" << std::endl;
 
     }
-    catch (Error err) {
+    catch (pj::Error err) {
         std::cout << "Exception: " << err.info() << std::endl;
     }
 }
 
-string PJSIP_Instance::add_account(string username, string password, string domain)
+string PJSIP_Instance::add_account(string username, string password, string domain, PJSIP_AudioStream* ASOwner)
 {
     std::cout << ("PJSIP_Instance::add_account: " + username) << std::endl;
 
@@ -68,7 +68,7 @@ string PJSIP_Instance::add_account(string username, string password, string doma
 
     acc_cfg.sipConfig.authCreds.push_back(aci);
 
-    acc = (new MyAccount);
+    acc = (new MyAccount(ASOwner));
     try {
         acc->create(acc_cfg);
     }
@@ -100,7 +100,7 @@ MyCall* PJSIP_Instance::make_call(string uri)
 
         return call;
     }
-    catch (Error& err) {
+    catch (pj::Error& err) {
         std::cout << "Exception: " << err.info() << std::endl;
     }
     return NULL;
@@ -118,7 +118,7 @@ void PJSIP_Instance::hangup_all_calls()
 
         ep.hangupAllCalls();
     }
-    catch (Error err) {
+    catch (pj::Error err) {
         std::cout << "Exception: " << err.info() << std::endl;
     }
 }

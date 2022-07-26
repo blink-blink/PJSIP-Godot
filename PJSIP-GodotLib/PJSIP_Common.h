@@ -16,6 +16,9 @@
 using namespace pj;
 #define USE_TEST 3
 
+
+class PJSIP_AudioStream;
+
 class MyEndpoint : public Endpoint
 {
 public:
@@ -77,12 +80,18 @@ public:
 
 class MyAccount : public Account
 {
+private:
+    PJSIP_AudioStream* ASOwner;
 public:
     std::vector<Call*> calls;
 
 public:
-    MyAccount()
-    {}
+    MyAccount(PJSIP_AudioStream* ASOwner)
+    {
+        this->ASOwner = ASOwner;
+    }
+    /*MyAccount()
+    {}*/
 
     ~MyAccount()
     {
@@ -97,36 +106,16 @@ public:
         }
     }
 
-    void removeCall(Call* call)
-    {
-        for (std::vector<Call*>::iterator it = calls.begin();
-            it != calls.end(); ++it)
-        {
-            if (*it == call) {
-                calls.erase(it);
-                break;
-            }
-        }
+    void removeCall(Call* call);
+
+    void _onRegState(OnRegStateParam& prm);
+    void _onIncomingCall(OnIncomingCallParam& iprm);
+
+    virtual void onRegState(OnRegStateParam& prm) {
+        _onRegState(prm);
     }
 
-    virtual void onRegState(OnRegStateParam& prm)
-    {
-        AccountInfo ai = getInfo();
-        std::cout << (ai.regIsActive ? "*** Register: code=" : "*** Unregister: code=")
-            << prm.code << std::endl;
-    }
-
-    virtual void onIncomingCall(OnIncomingCallParam& iprm)
-    {
-        Call* call = new MyCall(*this, iprm.callId);
-        CallInfo ci = call->getInfo();
-        CallOpParam prm;
-
-        std::cout << "*** Incoming Call: " << ci.remoteUri << " ["
-            << ci.stateText << "]" << std::endl;
-
-        calls.push_back(call);
-        prm.statusCode = (pjsip_status_code)200;
-        call->answer(prm);
+    virtual void onIncomingCall(OnIncomingCallParam& iprm) {
+        _onIncomingCall(iprm);
     }
 };

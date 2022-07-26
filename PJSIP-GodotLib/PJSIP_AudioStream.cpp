@@ -15,7 +15,11 @@ void PJSIP_AudioStream::_register_methods()
 	register_method("push_frame", &PJSIP_AudioStream::push_frame);
 	register_method("push_frame_stereo", &PJSIP_AudioStream::push_frame_stereo);
 
+	//properties
 	register_property("username", &PJSIP_AudioStream::username, godot::String());
+
+	//signals
+	//register_signal<PJSIP_AudioStream>((char*)"on_incoming_call", "call_idx", GODOT_VARIANT_TYPE_INT);
 }
 
 void PJSIP_AudioStream::_init()
@@ -48,6 +52,27 @@ void PJSIP_AudioStream::queue_free()
 	delete(pi);
 }
 
+size_t PJSIP_AudioStream::make_CallStreamPair(MyCall* call, AudioStreamGeneratorPlayback* stream)
+{
+	CallStreamPair csp = CallStreamPair(call, stream);
+	callStreamPair.push_back(csp);
+	Godot::print("call stream pair created");
+	csp.frames_to_stream();
+	std::cout << "call at: " << call->get_idx() << '\n';
+	return call->get_idx();
+}
+
+void PJSIP_AudioStream::buffer_incoming_call_to_stream(AudioStreamGeneratorPlayback* stream)
+{
+	buffer_streams.push_back(stream);
+}
+
+void PJSIP_AudioStream::call_to_buffer_stream(MyCall* call)
+{
+	emit_signal("on_incoming_call", make_CallStreamPair(call, buffer_streams.front()));
+	buffer_streams.erase(buffer_streams.begin());
+}
+
 void PJSIP_AudioStream::fill_buffer()
 {
 	if (callStreamPair.empty()) {
@@ -73,12 +98,7 @@ size_t PJSIP_AudioStream::make_call(godot::String uri, AudioStreamGeneratorPlayb
 
 	MyCall* call = pi->make_call(uri.alloc_c_string());
 	if (call){
-		CallStreamPair csp = CallStreamPair(call, stream);
-		callStreamPair.push_back(csp);
-		Godot::print("call stream pair created");
-		csp.frames_to_stream();
-		std::cout << "call at: " << call->get_idx() << '\n';
-		return call->get_idx();
+		return make_CallStreamPair(call, stream);
 	}
 	else 
 		Godot::print("Error in making call");

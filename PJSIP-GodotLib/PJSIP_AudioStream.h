@@ -2,6 +2,7 @@
 #include "Common.h"
 #include "PJSIP_Instance.h"
 #include "pjmedia-codec.h"
+
 #include <AudioStreamGeneratorPlayback.hpp>
 #include <Node.hpp>
 #include <iostream>
@@ -45,8 +46,10 @@ class PJSIP_AudioStream : public Node
 	godot::String username;
 
 	PJSIP_Instance* pi;
-	std::vector<CallStreamPair> callStreamPair;
 	float buffer = 0;
+
+	std::vector<CallStreamPair> callStreamPair;
+	std::vector<AudioStreamGeneratorPlayback*> buffer_streams;
 
 public:
 	static void _register_methods();
@@ -56,6 +59,10 @@ public:
 	void _process(float delta);
 	void _physics_process(float delta);
 	void queue_free();
+
+	size_t make_CallStreamPair(MyCall* call, AudioStreamGeneratorPlayback* stream);
+	void buffer_incoming_call_to_stream(AudioStreamGeneratorPlayback* stream);
+	void call_to_buffer_stream(MyCall* call);
 
 	void fill_buffer();
 	void initialize_endpoint(int port, int loglvl);
