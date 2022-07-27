@@ -67,6 +67,7 @@ shape = SubResource( 2 )
 [node name="AudioStreamPlayerMic" type="AudioStreamPlayer" parent="."]
 stream = SubResource( 4 )
 volume_db = 9.487
+autoplay = true
 bus = "Microphone"
 
 [connection signal="on_incoming_call" from="PJSIPTest" to="." method="_on_PJSIPTest_on_incoming_call"]

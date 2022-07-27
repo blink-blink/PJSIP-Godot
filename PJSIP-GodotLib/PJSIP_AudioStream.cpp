@@ -194,3 +194,7 @@ void PJSIP_AudioStream::add_account(godot::String username, godot::String passwo
 {
 	pi->add_account(username.alloc_c_string(), password.alloc_c_string(), domain.alloc_c_string(), this);
 }
+
+void PJSIP_AudioStream::set_use_pj_capture(bool b)
+{
+}
