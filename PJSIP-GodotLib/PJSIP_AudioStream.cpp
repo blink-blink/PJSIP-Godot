@@ -1,5 +1,6 @@
 #include "PJSIP_AudioStream.h"
 //#include "PJSUA2_demo.h"
+#include <fstream>
 
 void PJSIP_AudioStream::_register_methods()
 {
@@ -145,6 +146,13 @@ void PJSIP_AudioStream::push_frame(godot::PoolVector2Array frame, size_t call_id
 
 	}
 	//std::cout << "string built \n";
+
+	//debug
+	std::ofstream push("pushed_frames.lpcm", std::fstream::app | std::ios::binary);
+	push << s;
+	//output.write(s.c_str(), sizeof(char) * s.length());
+	push.close();
+
 	//push frames to call
 	call->putFrameAsString(s);
 }

@@ -70,7 +70,7 @@ func _process(delta):
 	
 	var buffer = audioeffectcapture.get_buffer(audioeffectcapture.get_frames_available())
 	#print(buffer)
-	pjsip.push_frame_stereo(buffer,this_call)
+	pjsip.push_frame(buffer,this_call)
 	
 	checkerTimer -= delta
 	if checkerTimer <= 0:

@@ -5,7 +5,7 @@
 [ext_resource path="res://uniqueAudioStrem.tres" type="AudioStream" id=3]
 
 [sub_resource type="AudioStreamGenerator" id=5]
-mix_rate = 8000.0
+mix_rate = 16000.0
 buffer_length = 1.0
 
 [sub_resource type="RectangleShape2D" id=1]

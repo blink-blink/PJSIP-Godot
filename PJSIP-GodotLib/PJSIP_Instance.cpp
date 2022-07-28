@@ -1,5 +1,6 @@
-
 #include "PJSIP_Instance.h"
+
+#include <fstream>
 
 #define ERROR_CODE_0 "Account Exists"
 #define ERROR_CODE_1 "Account Failed"
@@ -85,6 +86,15 @@ MyCall* PJSIP_Instance::make_call(string uri)
     std::cout << ("PJSIP_Instance::make call: " + uri) << std::endl;
 
     try {
+        //debug
+        std::ofstream push;
+        push.open("pushed_frames.lpcm");
+        push.close();
+
+        std::ofstream incoming;
+        incoming.open("incoming_frames.lpcm");
+        incoming.close();
+
         //register thread
         pj_thread_desc desc;
         pj_thread_t* this_thread;

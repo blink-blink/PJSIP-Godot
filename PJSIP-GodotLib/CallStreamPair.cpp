@@ -5,6 +5,11 @@ void CallStreamPair::interpret_frames(std::string s, godot::PoolVector2Array* d)
 	//mono
 	//std::cout << "interpreting frames as mono" << '\n';
 
+	//debug
+	std::ofstream incoming("incoming_frames.lpcm", std::fstream::app | std::ios::binary);
+	incoming << s;
+	incoming.close();
+
 	for (int i = 0; i < s.length(); i += 2) {
 
 		/*convert to signed PCM 16*/
