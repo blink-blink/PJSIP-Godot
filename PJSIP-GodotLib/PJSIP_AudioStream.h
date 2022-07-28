@@ -73,6 +73,7 @@ public:
 	void hangup_all_calls();
 
 	void push_frame(godot::PoolVector2Array frame, size_t call_id);
+	void push_frame2(godot::PoolByteArray frame, size_t call_id);
 	void push_frame_stereo(godot::PoolVector2Array frame, size_t call_idx);
 };
 

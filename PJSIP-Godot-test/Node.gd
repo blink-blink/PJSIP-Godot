@@ -11,6 +11,7 @@ var ms = 500
 
 var phase = 0
 var checkerTimer = 0
+var sample_rate = 8000
 
 #this is a pointer casted as uint8_t
 var this_call = null
@@ -54,7 +55,7 @@ func call_test():
 	print("testing call on uri: "+call_uri);
 	
 	#stream settings
-	asp.stream.mix_rate = 8000
+	asp.stream.mix_rate = sample_rate
 	
 	#insert call-audiostreamsample pair
 	this_call = pjsip.make_call(call_uri,asp.get_stream_playback());
@@ -62,22 +63,14 @@ func call_test():
 	print(this_call)
 	asp.play()
 
-func _process(delta):	
+func _process(delta):
 	var idx = AudioServer.get_bus_index("Microphone")
 	var audioeffectcapture:AudioEffectCapture = AudioServer.get_bus_effect(idx,0)
-	#print(audioeffectcapture)
+	#print(audioeffectcapture)	
 	
-	var buffer = audioeffectcapture.get_buffer(2000)
+	var buffer = audioeffectcapture.get_buffer(audioeffectcapture.get_frames_available())
 	#print(buffer)
-	
-#	var buffer: PoolVector2Array
-#	for i in range(0,120):
-#		buffer.append(Vector2(1,1)*sin(phase*TAU))
-#		phase = fmod(phase + 440.0/22050, 1.0)
-#		#phase += delta*0.001
-			
-	#print(buffer)
-	pjsip.push_frame(buffer,this_call)
+	pjsip.push_frame_stereo(buffer,this_call)
 	
 	checkerTimer -= delta
 	if checkerTimer <= 0:
@@ -99,4 +92,5 @@ func _physics_process(delta):
 
 func _on_PJSIPTest_on_incoming_call(call_idx):
 	print("call received: ", call_idx)
+	#aspic.stream.mix_rate = sample_rate
 	aspic.play()

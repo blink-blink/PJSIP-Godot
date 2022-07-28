@@ -13,6 +13,7 @@ void PJSIP_AudioStream::_register_methods()
 	register_method("make_call", &PJSIP_AudioStream::make_call);
 	register_method("hangup_all_calls", &PJSIP_AudioStream::hangup_all_calls);
 	register_method("push_frame", &PJSIP_AudioStream::push_frame);
+	register_method("push_frame2", &PJSIP_AudioStream::push_frame);
 	register_method("push_frame_stereo", &PJSIP_AudioStream::push_frame_stereo);
 	register_method("buffer_incoming_call_to_stream", &PJSIP_AudioStream::buffer_incoming_call_to_stream);
 
@@ -134,13 +135,31 @@ void PJSIP_AudioStream::push_frame(godot::PoolVector2Array frame, size_t call_id
 		float fc = frame[i].x;
 
 		// float 32 to PCM16
-		int16_t wc = (int16_t)(fc * 0x8000);
+		int16_t wc = (int16_t)(fc * 0x7fff);
 
 		//lil endian
 		char c = (wc >> 0) & 0xFF;
 		s += c;
 		c = (wc >> 8) & 0xFF;
 		s += c;
+
+	}
+	//std::cout << "string built \n";
+	//push frames to call
+	call->putFrameAsString(s);
+}
+
+void PJSIP_AudioStream::push_frame2(godot::PoolByteArray frame, size_t call_idx)
+{
+	MyCall* call = MyCall::calls_lookup(call_idx);
+	if (!call) return;
+
+	std::string s;
+
+	for (int i = 0; i < frame.size(); i++)
+	{
+
+		s += frame[i];
 
 	}
 	//std::cout << "string built \n";
@@ -166,8 +185,8 @@ void PJSIP_AudioStream::push_frame_stereo(godot::PoolVector2Array frame, size_t 
 		//std::cout << fc1 << fc2 << '\n';
 
 		// float 32 to PCM
-		int16_t wc1 = (int16_t)(fc1 * 0x8000);
-		int16_t wc2 = (int16_t)(fc2 * 0x8000);
+		int16_t wc1 = (int16_t)(fc1 * 0x7fff);
+		int16_t wc2 = (int16_t)(fc2 * 0x7fff);
 
 		//std::cout << wc1 << wc2 << '\n';
 
