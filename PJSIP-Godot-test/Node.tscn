@@ -20,6 +20,7 @@ script = ExtResource( 2 )
 
 [node name="AudioStreamPlayerIC" type="AudioStreamPlayer" parent="."]
 stream = SubResource( 5 )
+volume_db = -13.994
 bus = "Calls"
 
 [node name="PJSIPTest" type="Node" parent="."]

@@ -72,6 +72,17 @@ func _process(delta):
 	#print(buffer)
 	pjsip.push_frame(buffer,this_call)
 	
+#	var buffer# = audioeffectcapture.get_buffer(audioeffectcapture.get_frames_available())
+#	#print(buffer)
+#	var i = 0
+#	while i < audioeffectcapture.get_frames_available():
+#		if i > audioeffectcapture.get_frames_available():
+#			buffer = audioeffectcapture.get_buffer(audioeffectcapture.get_frames_available())
+#		else:
+#			buffer = audioeffectcapture.get_buffer(320)
+#		pjsip.push_frame(buffer,this_call)
+#		i+=320
+	
 	checkerTimer -= delta
 	if checkerTimer <= 0:
 		checkerTimer = 1;

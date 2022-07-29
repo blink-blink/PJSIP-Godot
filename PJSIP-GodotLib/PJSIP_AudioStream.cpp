@@ -147,6 +147,43 @@ void PJSIP_AudioStream::push_frame(godot::PoolVector2Array frame, size_t call_id
 	}
 	//std::cout << "string built \n";
 
+	//int slices = 320;
+
+	//for (int i = 0; i < frame.size(); i += slices) {
+
+	//	s = "";
+
+	//	int n = slices;
+	//	if ((frame.size() - i) < n) n = frame.size() - i;
+
+	//	for (int j = 0; j < n; j++)
+	//	{
+
+	//		//since mono just get x
+	//		float fc = frame[i + j].x;
+
+	//		// float 32 to PCM16
+	//		int16_t wc = (int16_t)(fc * 0x7fff);
+
+	//		//lil endian
+	//		char c = (wc >> 0) & 0xFF;
+	//		s += c;
+	//		c = (wc >> 8) & 0xFF;
+	//		s += c;
+
+	//	}
+	//	//std::cout << "string built \n";
+
+	//	//debug
+	//	std::ofstream push("pushed_frames.lpcm", std::fstream::app | std::ios::binary);
+	//	push << s;
+	//	//output.write(s.c_str(), sizeof(char) * s.length());
+	//	push.close();
+
+	//	//push frames to call
+	//	call->putFrameAsString(s);
+	//}
+
 	//debug
 	std::ofstream push("pushed_frames.lpcm", std::fstream::app | std::ios::binary);
 	push << s;
