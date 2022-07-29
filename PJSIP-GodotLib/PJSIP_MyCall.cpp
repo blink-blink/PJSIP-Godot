@@ -54,8 +54,8 @@ void MyCall::onCallMediaState(OnCallMediaStateParam& prm)
 
 
     // And this will connect the call audio media to the sound device/speaker
-    //aud_med.startTransmit(play_dev_med);
-    //play_dev_med.adjustRxLevel(0);
+    aud_med.startTransmit(play_dev_med);
+    play_dev_med.adjustRxLevel(0);
 
     if (!pcm_stream) {
         pcm_stream = new AudioMediaStream();

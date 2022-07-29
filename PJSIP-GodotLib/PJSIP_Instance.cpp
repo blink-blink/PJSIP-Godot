@@ -24,10 +24,10 @@ void PJSIP_Instance::initialize_endpoint(int port, int loglvl)
         EpConfig ep_cfg;
         ep_cfg.logConfig.level = loglvl;
         ep.libInit(ep_cfg);
-        ep.audDevManager().setNullDev();
+        //ep.audDevManager().setNullDev();
 
         //prioritize speex/8000
-        string codecID = "speex/16000";
+        string codecID = "speex/8000";
         for (auto codec : ep.codecEnum2()) {
             int prio = 0;
             if (codec.codecId.find(codecID) != std::string::npos) {
