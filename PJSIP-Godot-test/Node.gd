@@ -42,7 +42,8 @@ func _unhandled_input(event):
 		if is_calling:
 			call_test()
 		else:
-			pjsip.hangup_all_calls()
+			#pjsip.hangup_all_calls()
+			pjsip.hangup_call(outgoing_call)
 	
 	if event.is_action_pressed("ui_cancel"):
 		pass

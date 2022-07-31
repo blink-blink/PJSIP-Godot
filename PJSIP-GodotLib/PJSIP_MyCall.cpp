@@ -2,6 +2,7 @@
 #include <fstream>
 
 vector<MyCall*> MyCall::calls;
+size_t MyCall::counter;
 
 size_t MyCall::get_idx()
 {
@@ -11,8 +12,13 @@ size_t MyCall::get_idx()
 MyCall* MyCall::calls_lookup(size_t call_id)
 {
     if (calls.size() <= 0) return NULL;
-    if (!calls[call_id]->isActive()) return NULL;
-    return calls[call_id];
+
+    for (auto& it : calls) {
+        if (it->idx != call_id) continue;
+        if (!it->isActive()) return NULL;
+        return it;
+    }
+    return NULL;
 }
 
 void MyCall::onCallState(OnCallStateParam& prm)

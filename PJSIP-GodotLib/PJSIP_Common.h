@@ -39,13 +39,14 @@ class MyAccount;
 class MyCall : public Call
 {
 private:
+    static vector<MyCall*> calls;
+    static size_t counter;
     size_t idx;
 
     MyAccount* myAcc;
     AudioMediaCapture* pcm_capture;
     AudioMediaStream* pcm_stream;
     CallStreamPair* csp;
-    static vector<MyCall*> calls;
 
 public:
     MyCall(Account& acc, int call_id = PJSUA_INVALID_ID)
@@ -56,7 +57,10 @@ public:
         pcm_stream = NULL;
         myAcc = (MyAccount*)&acc;
 
-        idx = calls.size();
+        if (calls.size() <= 0) counter = 0;
+        idx = counter;
+        ++counter;
+
         calls.push_back(this);
     }
 

@@ -14,6 +14,7 @@ void PJSIP_AudioStream::_register_methods()
 	register_method("make_call", &PJSIP_AudioStream::make_call);
 	register_method("hangup_call", &PJSIP_AudioStream::hangup_call);
 	register_method("hangup_all_calls", &PJSIP_AudioStream::hangup_all_calls);
+
 	register_method("push_frame", &PJSIP_AudioStream::push_frame);
 	register_method("push_frame2", &PJSIP_AudioStream::push_frame);
 	register_method("push_frame_stereo", &PJSIP_AudioStream::push_frame_stereo);
@@ -82,8 +83,7 @@ void PJSIP_AudioStream::call_to_buffer_stream(MyCall* call)
 	}
 	else {
 		Godot::print("Error: Empty AudioStream Buffer");
-		CallOpParam prm;
-		call->hangup(prm);
+		pi->hangup_call(call);
 	}
 		
 }
@@ -103,12 +103,12 @@ void PJSIP_AudioStream::fill_buffer()
 		CallStreamPair* csp = *it;
 		
 		if (!csp->call){
-			//std::cout << "Erasing it\n";
+			std::cout << "Erasing it\n";
 			it = callStreamPair.erase(it);
 
-			//std::cout << "Deleting CallStreamPair \n";
+			std::cout << "Deleting CallStreamPair \n";
 			delete csp;
-			//std::cout << "continuing...\n";
+			std::cout << "continuing...\n";
 			continue;
 		}
 
@@ -142,14 +142,14 @@ void PJSIP_AudioStream::hangup_call(size_t call_id)
 {
 	MyCall* call = MyCall::calls_lookup(call_id);
 	if (!call) return;
-	Godot::print("hanging up call at id: ", call_id);
-	CallOpParam prm;
-	call->hangup(prm);
+	std::cout << "hanging up call on id: " << call->get_idx() << '\n';
+	std::cout << "call status: " << call->isActive() << '\n';
+	pi->hangup_call(call);
 }
 
 void PJSIP_AudioStream::hangup_all_calls()
 {
-	Godot::print("hanging up calls");
+	Godot::print("hanging up calls \n");
 	pi->hangup_all_calls();
 }
 

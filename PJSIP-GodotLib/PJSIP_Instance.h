@@ -39,5 +39,6 @@ public:
 	void initialize_endpoint(int port, int loglvl);
 	string add_account(string username, string password, string domain, PJSIP_AudioStream* ASOwner);
 	MyCall* make_call(string uri);
+	void hangup_call(MyCall* call);
 	void hangup_all_calls();
 };

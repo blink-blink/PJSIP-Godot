@@ -118,6 +118,25 @@ MyCall* PJSIP_Instance::make_call(string uri)
     return NULL;
 }
 
+void PJSIP_Instance::hangup_call(MyCall* call)
+{
+    std::cout << "PJSIP_Instance::hanging up call: " << call->get_idx() << std::endl;
+    try {
+        //register thread
+        pj_thread_desc desc;
+        pj_thread_t* this_thread;
+        pj_bzero(desc, sizeof(desc));
+        pj_thread_register("thread", desc, &this_thread);
+
+        CallOpParam prm;
+        call->hangup(prm);
+        std::cout << "call on id: " << call->get_idx() << " successfully hangup \n";
+    }
+    catch (pj::Error err) {
+        std::cout << "Exception: " << err.info() << std::endl;
+    }
+}
+
 void PJSIP_Instance::hangup_all_calls()
 {
     std::cout << ("PJSIP_Instance::hanging up call") << std::endl;
