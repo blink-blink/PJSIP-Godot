@@ -66,7 +66,7 @@ func call_test():
 	
 	# start streaming audio effect capture of bus: Microphone
 	var idx = AudioServer.get_bus_index("Microphone")
-	var audioeffectcapture:AudioEffectCapture = AudioServer.get_bus_effect(idx,0)
+	var audioeffectcapture:AudioEffectCapture = AudioServer.get_bus_effect(idx,1)
 	
 	if not stream_thread:
 		stream_thread = Thread.new()

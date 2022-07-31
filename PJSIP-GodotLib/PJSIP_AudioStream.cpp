@@ -12,6 +12,7 @@ void PJSIP_AudioStream::_register_methods()
 	register_method("initialize_endpoint", &PJSIP_AudioStream::initialize_endpoint);
 	register_method("add_account", &PJSIP_AudioStream::add_account);
 	register_method("make_call", &PJSIP_AudioStream::make_call);
+	register_method("hangup_call", &PJSIP_AudioStream::hangup_call);
 	register_method("hangup_all_calls", &PJSIP_AudioStream::hangup_all_calls);
 	register_method("push_frame", &PJSIP_AudioStream::push_frame);
 	register_method("push_frame2", &PJSIP_AudioStream::push_frame);
