@@ -1,4 +1,4 @@
-#include "PJSIP_Common.h"
+#include "CallStreamPair.h"
 #include <fstream>
 
 vector<MyCall*> MyCall::calls;
@@ -11,6 +11,7 @@ size_t MyCall::get_idx()
 MyCall* MyCall::calls_lookup(size_t call_id)
 {
     if (calls.size() <= 0) return NULL;
+    if (!calls[call_id]->isActive()) return NULL;
     return calls[call_id];
 }
 
@@ -24,8 +25,20 @@ void MyCall::onCallState(OnCallStateParam& prm)
 
     if (ci.state == PJSIP_INV_STATE_DISCONNECTED) {
         myAcc->removeCall(this);
+
+        /* Call csp on_disconnect() */
+        if (csp) {
+            csp->on_call_disconnect();
+        }
+
         /* Delete the call */
+        for (auto it = calls.begin(); it != calls.end();) {
+            if (*it == this)it = calls.erase(it);
+            else ++it;
+        }
+        std::cout << "calls new size: " << calls.size() << std::endl;
         delete this;
+        std::cout << "call deleted \n";
     }
 }
 
@@ -48,12 +61,12 @@ void MyCall::onCallMediaState(OnCallMediaStateParam& prm)
         return;
     }
 
-    // This will connect the wav file to the call audio media
-    cap_dev_med.startTransmit(aud_med);
-    cap_dev_med.adjustRxLevel(0);
+    //// This will connect the wav file to the call audio media
+    //cap_dev_med.adjustRxLevel(3);
+    //cap_dev_med.startTransmit(aud_med);
 
 
-    // And this will connect the call audio media to the sound device/speaker
+    //// And this will connect the call audio media to the sound device/speaker
     //aud_med.startTransmit(play_dev_med);
     //play_dev_med.adjustRxLevel(0);
 
@@ -72,6 +85,12 @@ void MyCall::onCallMediaState(OnCallMediaStateParam& prm)
         aud_med.startTransmit(*pcm_capture);
         //pcm_stream->startTransmit(*pcm_capture);
     }
+}
+
+void MyCall::setCallStreamPair(CallStreamPair* csp)
+{
+    std::cout << "call stream pair set for call \n";
+    this->csp = csp;
 }
 
 void MyCall::putFrame(char* chunk, size_t datasize)

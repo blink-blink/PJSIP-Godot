@@ -1,4 +1,11 @@
-#include "PJSIP_AudioStream.h"
+#include "CallStreamPair.h"
+#include <fstream>
+
+void CallStreamPair::on_call_disconnect()
+{
+	std::cout << "on call disconnect called \n";
+	call = NULL;
+}
 
 void CallStreamPair::interpret_frames(std::string s, godot::PoolVector2Array* d)
 {
@@ -14,15 +21,19 @@ void CallStreamPair::interpret_frames(std::string s, godot::PoolVector2Array* d)
 
 		/*convert to signed PCM 16*/
 		int16_t wc = ((s[i + 1] - 0x7f) << 8);
-		wc += (s[i] - 0x7f) - 0x7fff;
+		//wc += (s[i] - 0x7f) - 0x7fff;
+		wc += (s[i] - 0xff) - 0x7fff;
 
 		/*Convert PCM to float 32*/
 		float fc = ((float)wc) / (float)0x7fff;
 		if (fc > 1) fc = 1;
 		if (fc < -1) fc = -1;
 
+		//std::cout << fc;
+
 		d->append(godot::Vector2(1, 1) * fc);
 	}
+	//std::cout << '\n';
 
 }
 
@@ -56,6 +67,12 @@ void CallStreamPair::interpret_frames_stereo(std::string s, godot::PoolVector2Ar
 
 void CallStreamPair::frames_to_stream() 
 {
+	if (!call) return;
+	//else std::cout << "call exists \n";
+
+	if (!call->isActive()) return;
+	//else std::cout << "call is active \n";
+
 	if (!call->hasMedia()) {
 		Godot::print("no media", &stream);
 		return;

@@ -1,10 +1,17 @@
-[gd_resource type="AudioBusLayout" load_steps=3 format=2]
+[gd_resource type="AudioBusLayout" load_steps=5 format=2]
 
 [sub_resource type="AudioEffectCapture" id=3]
 resource_name = "Capture"
 
+[sub_resource type="AudioEffectLowPassFilter" id=4]
+resource_name = "LowPassFilter"
+
+[sub_resource type="AudioEffectCompressor" id=5]
+resource_name = "Compressor"
+
 [sub_resource type="AudioEffectAmplify" id=1]
 resource_name = "Amplify"
+volume_db = 2.62
 
 [resource]
 bus/0/volume_db = 6.02
@@ -22,5 +29,9 @@ bus/2/mute = false
 bus/2/bypass_fx = false
 bus/2/volume_db = 6.02
 bus/2/send = "Master"
-bus/2/effect/0/effect = SubResource( 1 )
+bus/2/effect/0/effect = SubResource( 4 )
 bus/2/effect/0/enabled = true
+bus/2/effect/1/effect = SubResource( 5 )
+bus/2/effect/1/enabled = false
+bus/2/effect/2/effect = SubResource( 1 )
+bus/2/effect/2/enabled = false

@@ -1,4 +1,4 @@
-#include "PJSIP_AudioStream.h"
+#include "CallStreamPair.h"
 //#include "PJSUA2_demo.h"
 #include <fstream>
 
@@ -57,10 +57,11 @@ void PJSIP_AudioStream::queue_free()
 
 size_t PJSIP_AudioStream::make_CallStreamPair(MyCall* call, AudioStreamGeneratorPlayback* stream)
 {
-	CallStreamPair csp = CallStreamPair(call, stream);
+	CallStreamPair* csp = new CallStreamPair(call, stream);
 	callStreamPair.push_back(csp);
 	Godot::print("call stream pair created");
-	csp.frames_to_stream();
+	call->setCallStreamPair(csp);
+	csp->frames_to_stream();
 	std::cout << "call at: " << call->get_idx() << '\n';
 	return call->get_idx();
 }
@@ -79,7 +80,9 @@ void PJSIP_AudioStream::call_to_buffer_stream(MyCall* call)
 		buffer_streams.erase(buffer_streams.begin());
 	}
 	else {
-		Godot::print("Error: Empty AudioStream Buffer");	
+		Godot::print("Error: Empty AudioStream Buffer");
+		CallOpParam prm;
+		call->hangup(prm);
 	}
 		
 }
@@ -87,15 +90,33 @@ void PJSIP_AudioStream::call_to_buffer_stream(MyCall* call)
 void PJSIP_AudioStream::fill_buffer()
 {
 	if (callStreamPair.empty()) {
+		//std::cout << "Call Stream Pair empty \n";
 		return;
 	}
 	//for every calls, stream to corresponding godot::audiostream
-	for (auto& csp : callStreamPair)
+	//std::cout << "size: " << callStreamPair.size() << '\n';
+	for (auto it = callStreamPair.begin(); it != callStreamPair.end();)
 	{
-		if (csp.call->isActive()) {
-			csp.frames_to_stream();
+		//std::cout << "idx at: " << it - callStreamPair.begin() << '\n';
+
+		CallStreamPair* csp = *it;
+		
+		if (!csp->call){
+			//std::cout << "Erasing it\n";
+			it = callStreamPair.erase(it);
+
+			//std::cout << "Deleting CallStreamPair \n";
+			delete csp;
+			//std::cout << "continuing...\n";
+			continue;
 		}
+
+		//std::cout << "calling frames_to_stream \n";
+		csp->frames_to_stream();
+		++it;
+		
 	}
+	//std::cout << "new size: " << callStreamPair.size() << '\n';
 }
 
 void PJSIP_AudioStream::initialize_endpoint(int port, int loglvl)
@@ -116,6 +137,15 @@ size_t PJSIP_AudioStream::make_call(godot::String uri, AudioStreamGeneratorPlayb
 	return NULL;
 }
 
+void PJSIP_AudioStream::hangup_call(size_t call_id)
+{
+	MyCall* call = MyCall::calls_lookup(call_id);
+	if (!call) return;
+	Godot::print("hanging up call at id: ", call_id);
+	CallOpParam prm;
+	call->hangup(prm);
+}
+
 void PJSIP_AudioStream::hangup_all_calls()
 {
 	Godot::print("hanging up calls");
@@ -127,13 +157,17 @@ void PJSIP_AudioStream::push_frame(godot::PoolVector2Array frame, size_t call_id
 	MyCall* call = MyCall::calls_lookup(call_idx);
 	if (!call) return;
 
+	//std::cout << "pushing frames \n";
+
 	std::string s;
+
+	//****************** direct push *********************//
 
 	for (int i = 0; i < frame.size(); i++) 
 	{
 
 		//since mono just get x
-		float fc = frame[i].x;
+		float fc = (frame[i].x + frame[i].y) / 2;
 
 		// float 32 to PCM16
 		int16_t wc = (int16_t)(fc * 0x7fff);
@@ -145,44 +179,8 @@ void PJSIP_AudioStream::push_frame(godot::PoolVector2Array frame, size_t call_id
 		s += c;
 
 	}
+
 	//std::cout << "string built \n";
-
-	//int slices = 320;
-
-	//for (int i = 0; i < frame.size(); i += slices) {
-
-	//	s = "";
-
-	//	int n = slices;
-	//	if ((frame.size() - i) < n) n = frame.size() - i;
-
-	//	for (int j = 0; j < n; j++)
-	//	{
-
-	//		//since mono just get x
-	//		float fc = frame[i + j].x;
-
-	//		// float 32 to PCM16
-	//		int16_t wc = (int16_t)(fc * 0x7fff);
-
-	//		//lil endian
-	//		char c = (wc >> 0) & 0xFF;
-	//		s += c;
-	//		c = (wc >> 8) & 0xFF;
-	//		s += c;
-
-	//	}
-	//	//std::cout << "string built \n";
-
-	//	//debug
-	//	std::ofstream push("pushed_frames.lpcm", std::fstream::app | std::ios::binary);
-	//	push << s;
-	//	//output.write(s.c_str(), sizeof(char) * s.length());
-	//	push.close();
-
-	//	//push frames to call
-	//	call->putFrameAsString(s);
-	//}
 
 	//debug
 	std::ofstream push("pushed_frames.lpcm", std::fstream::app | std::ios::binary);

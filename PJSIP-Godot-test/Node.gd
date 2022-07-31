@@ -11,10 +11,11 @@ var ms = 500
 
 var phase = 0
 var checkerTimer = 0
-var sample_rate = 8000
+var sample_rate = 16000
 
 #this is a pointer casted as uint8_t
-var this_call = null
+var outgoing_call = null
+var incoming_call = null
 
 var is_calling = false
 
@@ -58,35 +59,49 @@ func call_test():
 	asp.stream.mix_rate = sample_rate
 	
 	#insert call-audiostreamsample pair
-	this_call = pjsip.make_call(call_uri,asp.get_stream_playback());
+	outgoing_call = pjsip.make_call(call_uri,asp.get_stream_playback());
 	asp2.stream = asp.stream
-	print(this_call)
+	print(outgoing_call)
 	asp.play()
-
-func _process(delta):
+	
+	# start streaming audio effect capture of bus: Microphone
 	var idx = AudioServer.get_bus_index("Microphone")
 	var audioeffectcapture:AudioEffectCapture = AudioServer.get_bus_effect(idx,0)
-	#print(audioeffectcapture)	
 	
-	var buffer = audioeffectcapture.get_buffer(audioeffectcapture.get_frames_available())
-	#print(buffer)
-	pjsip.push_frame(buffer,this_call)
+	if not stream_thread:
+		stream_thread = Thread.new()
+	if stream_thread.is_active():
+		while stream_thread.is_alive():
+			pass
+		stream_thread.wait_to_finish()
 	
-#	var buffer# = audioeffectcapture.get_buffer(audioeffectcapture.get_frames_available())
-#	#print(buffer)
-#	var i = 0
-#	while i < audioeffectcapture.get_frames_available():
-#		if i > audioeffectcapture.get_frames_available():
-#			buffer = audioeffectcapture.get_buffer(audioeffectcapture.get_frames_available())
-#		else:
-#			buffer = audioeffectcapture.get_buffer(320)
-#		pjsip.push_frame(buffer,this_call)
-#		i+=320
+	stream_thread.start(self, "stream_capture", [audioeffectcapture, outgoing_call])
+
+var stream_thread: Thread
+var is_streaming: bool = false
+
+func stream_capture(params: Array):
+	var aec = params[0]
+	var call_idx = params[1]
 	
+	var usec_delay = 1000
+	while is_calling:
+		var msec_start = OS.get_system_time_msecs()
+		
+		var frames_available = aec.get_frames_available()
+		if frames_available >= 320:
+			var buffer = aec.get_buffer(320)
+			pjsip.push_frame(buffer, call_idx)
+		
+		var msec_taken = OS.get_system_time_msecs() - msec_start
+		if msec_taken*1000 < usec_delay:
+			OS.delay_usec(usec_delay - msec_taken*1000)
+
+func _process(delta):
 	checkerTimer -= delta
 	if checkerTimer <= 0:
 		checkerTimer = 1;
-		print(aspic.get_stream_playback().get_frames_available())
+#		print(aspic.get_stream_playback().get_frames_available())
 
 func _physics_process(delta):
 	box.applied_force.x = 0
@@ -103,5 +118,6 @@ func _physics_process(delta):
 
 func _on_PJSIPTest_on_incoming_call(call_idx):
 	print("call received: ", call_idx)
-	#aspic.stream.mix_rate = sample_rate
+	incoming_call = call_idx
 	aspic.play()
+	pjsip.buffer_incoming_call_to_stream(aspic.get_stream_playback())

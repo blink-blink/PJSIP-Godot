@@ -56,6 +56,15 @@ string PJSIP_Instance::add_account(string username, string password, string doma
 {
     std::cout << ("PJSIP_Instance::add_account: " + username) << std::endl;
 
+    //debug
+    std::ofstream push;
+    push.open("pushed_frames.lpcm");
+    push.close();
+
+    std::ofstream incoming;
+    incoming.open("incoming_frames.lpcm");
+    incoming.close();
+
     //register thread
     pj_thread_desc desc;
     pj_thread_t* this_thread;
@@ -86,14 +95,6 @@ MyCall* PJSIP_Instance::make_call(string uri)
     std::cout << ("PJSIP_Instance::make call: " + uri) << std::endl;
 
     try {
-        //debug
-        std::ofstream push;
-        push.open("pushed_frames.lpcm");
-        push.close();
-
-        std::ofstream incoming;
-        incoming.open("incoming_frames.lpcm");
-        incoming.close();
 
         //register thread
         pj_thread_desc desc;

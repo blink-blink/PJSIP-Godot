@@ -16,7 +16,7 @@
 using namespace pj;
 #define USE_TEST 3
 
-
+struct CallStreamPair;
 class PJSIP_AudioStream;
 
 class MyEndpoint : public Endpoint
@@ -44,12 +44,14 @@ private:
     MyAccount* myAcc;
     AudioMediaCapture* pcm_capture;
     AudioMediaStream* pcm_stream;
+    CallStreamPair* csp;
     static vector<MyCall*> calls;
 
 public:
     MyCall(Account& acc, int call_id = PJSUA_INVALID_ID)
         : Call(acc, call_id)
     {
+        csp = NULL;
         pcm_capture = NULL;
         pcm_stream = NULL;
         myAcc = (MyAccount*)&acc;
@@ -72,6 +74,9 @@ public:
     virtual void onCallTransferRequest(OnCallTransferRequestParam& prm);
     virtual void onCallReplaced(OnCallReplacedParam& prm);
     virtual void onCallMediaState(OnCallMediaStateParam& prm);
+
+    void setCallStreamPair(CallStreamPair* csp);
+
     void putFrame(char* chunk, size_t datasize);
     void putFrameAsString(std::string s);
     void getFrames(char** s, size_t* datasize);

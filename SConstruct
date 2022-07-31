@@ -117,7 +117,10 @@ elif env['platform'] == "windows":
     env.Append(CPPPATH=['pjproject-2.12.1\pjmedia\include'])
     env.Append(CPPPATH=['pjproject-2.12.1\pjsip\include'])
     env.Append(LIBPATH=['.\PJSIP-GodotLib\lib/'])
-    env.Append(LIBS=['libpjproject-x86_64-x64-vc14-Release'])
+    if env['target'] in ('debug', 'd'):
+        env.Append(LIBS=['libpjproject-x86_64-x64-vc14-Debug'])
+    else:
+        env.Append(LIBS=['libpjproject-x86_64-x64-vc14-Release'])
     env.Append(LIBS=['Iphlpapi'])
     env.Append(LIBS=['dsound'])	
     env.Append(LIBS=['dxguid'])
