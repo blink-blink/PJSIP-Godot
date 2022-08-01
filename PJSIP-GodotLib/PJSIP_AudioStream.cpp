@@ -14,6 +14,7 @@ void PJSIP_AudioStream::_register_methods()
 	register_method("make_call", &PJSIP_AudioStream::make_call);
 	register_method("hangup_call", &PJSIP_AudioStream::hangup_call);
 	register_method("hangup_all_calls", &PJSIP_AudioStream::hangup_all_calls);
+	register_method("set_stereo", &PJSIP_AudioStream::set_stereo);
 
 	register_method("push_frame", &PJSIP_AudioStream::push_frame);
 	register_method("push_frame2", &PJSIP_AudioStream::push_frame);
@@ -55,6 +56,14 @@ void PJSIP_AudioStream::queue_free()
 {
 	Godot::print("Deleting PJSIP Instance");
 	delete(pi);
+}
+
+CallStreamPair* PJSIP_AudioStream::callStreamPair_lookup(size_t call_id)
+{
+	for (auto& it : callStreamPair) {
+		if (it->call->get_idx() == call_id) return it;
+	}
+	return NULL;
 }
 
 size_t PJSIP_AudioStream::make_CallStreamPair(MyCall* call, AudioStreamGeneratorPlayback* stream)
@@ -153,6 +162,11 @@ void PJSIP_AudioStream::hangup_all_calls()
 	pi->hangup_all_calls();
 }
 
+void PJSIP_AudioStream::set_stereo(size_t call_id, bool b)
+{
+	callStreamPair_lookup(call_id)->set_stereo(b);
+}
+
 void PJSIP_AudioStream::push_frame(godot::PoolVector2Array frame, size_t call_idx)
 {
 	MyCall* call = MyCall::calls_lookup(call_idx);
@@ -248,6 +262,12 @@ void PJSIP_AudioStream::push_frame_stereo(godot::PoolVector2Array frame, size_t 
 	}
 
 	//std::cout << "frame built: " << s << '\n';
+
+	//debug
+	std::ofstream push("pushed_frames.lpcm", std::fstream::app | std::ios::binary);
+	push << s;
+	//output.write(s.c_str(), sizeof(char) * s.length());
+	push.close();
 
 	//push frames to call
 	call->putFrameAsString(s);

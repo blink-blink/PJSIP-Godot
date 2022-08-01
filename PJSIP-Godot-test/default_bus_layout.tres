@@ -2,7 +2,7 @@
 
 [sub_resource type="AudioEffectAmplify" id=6]
 resource_name = "Amplify"
-volume_db = 9.61
+volume_db = 13.98
 
 [sub_resource type="AudioEffectCapture" id=3]
 resource_name = "Capture"
@@ -15,7 +15,7 @@ resource_name = "Compressor"
 
 [sub_resource type="AudioEffectAmplify" id=1]
 resource_name = "Amplify"
-volume_db = 2.62
+volume_db = -11.37
 
 [resource]
 bus/0/volume_db = 6.02
@@ -38,6 +38,6 @@ bus/2/send = "Master"
 bus/2/effect/0/effect = SubResource( 4 )
 bus/2/effect/0/enabled = true
 bus/2/effect/1/effect = SubResource( 5 )
-bus/2/effect/1/enabled = false
+bus/2/effect/1/enabled = true
 bus/2/effect/2/effect = SubResource( 1 )
-bus/2/effect/2/enabled = false
+bus/2/effect/2/enabled = true

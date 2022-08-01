@@ -93,6 +93,7 @@ func stream_capture(params: Array):
 		if frames_available >= 320:
 			var buffer = aec.get_buffer(320)
 			pjsip.push_frame(buffer, call_idx)
+			#pjsip.push_frame_stereo(buffer, call_idx)
 		
 		var msec_taken = OS.get_system_time_msecs() - msec_start
 		if msec_taken*1000 < usec_delay:
@@ -122,3 +123,4 @@ func _on_PJSIPTest_on_incoming_call(call_idx):
 	incoming_call = call_idx
 	aspic.play()
 	pjsip.buffer_incoming_call_to_stream(aspic.get_stream_playback())
+	#pjsip.set_stereo(call_idx, true)

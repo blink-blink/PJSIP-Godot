@@ -42,14 +42,19 @@ void CallStreamPair::interpret_frames_stereo(std::string s, godot::PoolVector2Ar
 	//stereo
 	//std::cout << "interpreting frames as stereo" << '\n';
 
+	//debug
+	std::ofstream incoming("incoming_frames.lpcm", std::fstream::app | std::ios::binary);
+	incoming << s;
+	incoming.close();
+
 	for (int i = 0; i < s.length(); i += 4) {
 
 		/*convert to signed PCM 16*/
-		int16_t wc1 = ((s[i + 1] - 0x7f) << 8);
-		wc1 += (s[i] - 0x7f) - 0x7fff;
-
-		int16_t wc2 = ((s[i + 3] - 0x7f) << 8);
+		int16_t wc1 = ((s[i + 3] - 0x7f) << 8);
 		wc1 += (s[i + 2] - 0x7f) - 0x7fff;
+
+		int16_t wc2 = ((s[i + 1] - 0x7f) << 8);
+		wc1 += (s[i] - 0x7f) - 0x7fff;
 
 		/*Convert PCM to float 32*/
 		float fc1 = ((float)wc1) / (float)0x7fff;

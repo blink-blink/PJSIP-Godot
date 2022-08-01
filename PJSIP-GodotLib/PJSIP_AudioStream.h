@@ -31,6 +31,7 @@ public:
 	void _physics_process(float delta);
 	void queue_free();
 
+	CallStreamPair* callStreamPair_lookup(size_t call_id);
 	size_t make_CallStreamPair(MyCall* call, AudioStreamGeneratorPlayback* stream);
 	void buffer_incoming_call_to_stream(AudioStreamGeneratorPlayback* stream);
 	void call_to_buffer_stream(MyCall* call);
@@ -42,6 +43,7 @@ public:
 	size_t make_call(godot::String uri, AudioStreamGeneratorPlayback* stream);
 	void hangup_call(size_t call_id);
 	void hangup_all_calls();
+	void set_stereo(size_t call_id, bool b);
 
 	void push_frame(godot::PoolVector2Array frame, size_t call_id);
 	void push_frame2(godot::PoolByteArray frame, size_t call_id);
