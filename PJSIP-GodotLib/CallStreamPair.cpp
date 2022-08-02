@@ -54,7 +54,7 @@ void CallStreamPair::interpret_frames_stereo(std::string s, godot::PoolVector2Ar
 		wc1 += (s[i + 2] - 0x7f) - 0x7fff;
 
 		int16_t wc2 = ((s[i + 1] - 0x7f) << 8);
-		wc1 += (s[i] - 0x7f) - 0x7fff;
+		wc2 += (s[i] - 0x7f) - 0x7fff;
 
 		/*Convert PCM to float 32*/
 		float fc1 = ((float)wc1) / (float)0x7fff;

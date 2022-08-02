@@ -54,9 +54,9 @@ void MyCall::onCallMediaState(OnCallMediaStateParam& prm)
 
     CallInfo ci = getInfo();
     AudioMedia aud_med;
-    AudioMedia& play_dev_med =
-        MyEndpoint::instance().audDevManager().getPlaybackDevMedia();
-    AudioMedia& cap_dev_med = Endpoint::instance().audDevManager().getCaptureDevMedia();
+    //AudioMedia& play_dev_med =
+    //    MyEndpoint::instance().audDevManager().getPlaybackDevMedia();
+    //AudioMedia& cap_dev_med = Endpoint::instance().audDevManager().getCaptureDevMedia();
 
     try {
         // Get the first audio media
@@ -132,7 +132,7 @@ std::string MyCall::getFramesAsString()
         //std::cout << "====fetch: " << s.length() << '\n';
         return s;
     }
-    return "\0";
+    return "";
 }
 
 void MyCall::onCallTransferRequest(OnCallTransferRequestParam& prm)
