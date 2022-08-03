@@ -10,6 +10,7 @@ void PJSIP_AudioStream::_register_methods()
 	register_method("queue_free", &PJSIP_AudioStream::queue_free);
 
 	register_method("initialize_endpoint", &PJSIP_AudioStream::initialize_endpoint);
+	register_method("initialize_endpoint2", &PJSIP_AudioStream::initialize_endpoint2);
 	register_method("add_account", &PJSIP_AudioStream::add_account);
 	register_method("make_call", &PJSIP_AudioStream::make_call);
 	register_method("hangup_call", &PJSIP_AudioStream::hangup_call);
@@ -134,6 +135,11 @@ void PJSIP_AudioStream::initialize_endpoint(int port, int loglvl)
 	pi->initialize_endpoint(port, loglvl);
 }
 
+void PJSIP_AudioStream::initialize_endpoint2(godot::String codec, int port, int loglvl)
+{
+	pi->initialize_endpoint(codec.alloc_c_string(), port, loglvl);
+}
+
 size_t PJSIP_AudioStream::make_call(godot::String uri, AudioStreamGeneratorPlayback* stream)
 {
 	Godot::print("making call");
@@ -198,10 +204,10 @@ void PJSIP_AudioStream::push_frame(godot::PoolVector2Array frame, size_t call_id
 	//std::cout << "string built \n";
 
 	//debug
-	std::ofstream push("pushed_frames.lpcm", std::fstream::app | std::ios::binary);
-	push << s;
-	//output.write(s.c_str(), sizeof(char) * s.length());
-	push.close();
+	//std::ofstream push("pushed_frames.lpcm", std::fstream::app | std::ios::binary);
+	//push << s;
+	////output.write(s.c_str(), sizeof(char) * s.length());
+	//push.close();
 
 	//push frames to call
 	call->putFrameAsString(s);
@@ -264,10 +270,10 @@ void PJSIP_AudioStream::push_frame_stereo(godot::PoolVector2Array frame, size_t 
 	//std::cout << "frame built: " << s << '\n';
 
 	//debug
-	std::ofstream push("pushed_frames.lpcm", std::fstream::app | std::ios::binary);
-	push << s;
-	//output.write(s.c_str(), sizeof(char) * s.length());
-	push.close();
+	//std::ofstream push("pushed_frames.lpcm", std::fstream::app | std::ios::binary);
+	//push << s;
+	////output.write(s.c_str(), sizeof(char) * s.length());
+	//push.close();
 
 	//push frames to call
 	call->putFrameAsString(s);

@@ -29,7 +29,8 @@ func _ready():
 	#var port = 5060;
 
 	print("initalizing endpoint...");
-	pjsip.initialize_endpoint(port,1)
+	#pjsip.initialize_endpoint(port,1)
+	pjsip.initialize_endpoint2("speex/32000",port,1)
 	
 	print("adding account: "+username);
 	pjsip.add_account(username, password, domain);
@@ -86,7 +87,7 @@ func stream_capture(params: Array):
 	var call_idx = params[1]
 	
 	var usec_delay = 20000
-	var max_frame_length = 640
+	var max_frame_length = 320
 	while is_calling:
 		var msec_start = OS.get_system_time_msecs()
 		
@@ -95,8 +96,8 @@ func stream_capture(params: Array):
 		while frames_available >= max_frame_length:
 			#print("frames: ",frames_available)
 			var buffer = aec.get_buffer(max_frame_length)
-			pjsip.push_frame(buffer, call_idx)
-			#pjsip.push_frame_stereo(buffer, call_idx)
+			#pjsip.push_frame(buffer, call_idx)
+			pjsip.push_frame_stereo(buffer, call_idx)
 			frames_available -= max_frame_length
 		
 		#print("frames: ",frames_available)
@@ -132,5 +133,5 @@ func _on_PJSIPTest_on_incoming_call(call_idx):
 	print("call received: ", call_idx)
 	incoming_call = call_idx
 	pjsip.buffer_incoming_call_to_stream(aspic.get_stream_playback())
-	#pjsip.set_stereo(call_idx, true)
+	pjsip.set_stereo(call_idx, true)
 	aspic.play()

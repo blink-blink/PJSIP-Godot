@@ -36,6 +36,7 @@ public:
 		if (acc)
 			delete(acc);
 	}
+	void initialize_endpoint(std::string codec, int port, int loglvl);
 	void initialize_endpoint(int port, int loglvl);
 	string add_account(string username, string password, string domain, PJSIP_AudioStream* ASOwner);
 	MyCall* make_call(string uri);

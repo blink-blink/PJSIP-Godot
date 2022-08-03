@@ -5,14 +5,15 @@
 [ext_resource path="res://uniqueAudioStrem.tres" type="AudioStream" id=3]
 
 [sub_resource type="AudioStreamGenerator" id=5]
-mix_rate = 32000.0
+mix_rate = 16000.0
+buffer_length = 1.0
+
+[sub_resource type="AudioStreamMicrophone" id=4]
 
 [sub_resource type="RectangleShape2D" id=1]
 
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 314.5, 10 )
-
-[sub_resource type="AudioStreamMicrophone" id=4]
 
 [node name="Node" type="Node2D"]
 script = ExtResource( 2 )
@@ -33,6 +34,11 @@ position = Vector2( 144, -5 )
 stream = ExtResource( 3 )
 volume_db = -80.0
 bus = "Calls"
+
+[node name="AudioStreamPlayerMic" type="AudioStreamPlayer2D" parent="RigidBody2D"]
+stream = SubResource( 4 )
+autoplay = true
+bus = "Microphone"
 
 [node name="Polygon2D" type="Polygon2D" parent="RigidBody2D"]
 polygon = PoolVector2Array( 443, 302, 463, 302, 463, 322, 443, 322 )
@@ -65,10 +71,5 @@ polygon = PoolVector2Array( 192, 389, 825, 393, 825, 412, 196, 412 )
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
 position = Vector2( 511, 402 )
 shape = SubResource( 2 )
-
-[node name="AudioStreamPlayerMic" type="AudioStreamPlayer" parent="."]
-stream = SubResource( 4 )
-autoplay = true
-bus = "Microphone"
 
 [connection signal="on_incoming_call" from="PJSIPTest" to="." method="_on_PJSIPTest_on_incoming_call"]

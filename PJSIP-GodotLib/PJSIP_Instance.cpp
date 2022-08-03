@@ -5,13 +5,8 @@
 #define ERROR_CODE_0 "Account Exists"
 #define ERROR_CODE_1 "Account Failed"
 
-void PJSIP_Instance::initialize_endpoint(int port, int loglvl)
-{
-    if (ep.libGetState() > PJSUA_STATE_CREATED) {
-        std::cout << "Endpoint lib past created state" << '\n';
-        return;
-    }
 
+void init_ep(MyEndpoint* ep, std::string codec, int port, int loglvl) {
     try {
 
         //register thread
@@ -26,27 +21,27 @@ void PJSIP_Instance::initialize_endpoint(int port, int loglvl)
         //ep_cfg.medConfig.channelCount = 2; //stereo
         //ep_cfg.medConfig.audioFramePtime = 10;
         //std::cout << ep_cfg.medConfig.audioFramePtime << '\n';
-        ep.libInit(ep_cfg);
-        ep.audDevManager().setNullDev();
+        ep->libInit(ep_cfg);
+        ep->audDevManager().setNullDev();
 
         //prioritize speex/8000
-        string codecID = "speex/32000";
-        for (auto codec : ep.codecEnum2()) {
+        string codecID = codec;
+        for (auto codec : ep->codecEnum2()) {
             int prio = 0;
             if (codec.codecId.find(codecID) != std::string::npos) {
                 std::cout << codecID << " codec found" << "\n";
                 prio = 255;
             }
-            ep.codecSetPriority(codec.codecId, prio);
+            ep->codecSetPriority(codec.codecId, prio);
         }
 
         // Transport
         TransportConfig tcfg;
         tcfg.port = port;
-        ep.transportCreate(PJSIP_TRANSPORT_UDP, tcfg);
+        ep->transportCreate(PJSIP_TRANSPORT_UDP, tcfg);
 
         // Start library
-        ep.libStart();
+        ep->libStart();
         std::cout << "*** PJSUA2 STARTED ***" << std::endl;
 
     }
@@ -55,18 +50,38 @@ void PJSIP_Instance::initialize_endpoint(int port, int loglvl)
     }
 }
 
+void PJSIP_Instance::initialize_endpoint(std::string codec, int port, int loglvl)
+{
+    if (ep.libGetState() > PJSUA_STATE_CREATED) {
+        std::cout << "Endpoint lib past created state" << '\n';
+        return;
+    }
+
+    init_ep(&ep, codec, port, loglvl);
+}
+
+void PJSIP_Instance::initialize_endpoint(int port, int loglvl)
+{
+    if (ep.libGetState() > PJSUA_STATE_CREATED) {
+        std::cout << "Endpoint lib past created state" << '\n';
+        return;
+    }
+
+    init_ep(&ep, "speex/16000", port, loglvl);
+}
+
 string PJSIP_Instance::add_account(string username, string password, string domain, PJSIP_AudioStream* ASOwner)
 {
     std::cout << ("PJSIP_Instance::add_account: " + username) << std::endl;
 
     //debug
-    std::ofstream push;
-    push.open("pushed_frames.lpcm");
-    push.close();
+    //std::ofstream push;
+    //push.open("pushed_frames.lpcm");
+    //push.close();
 
-    std::ofstream incoming;
-    incoming.open("incoming_frames.lpcm");
-    incoming.close();
+    //std::ofstream incoming;
+    //incoming.open("incoming_frames.lpcm");
+    //incoming.close();
 
     //register thread
     pj_thread_desc desc;
@@ -90,6 +105,7 @@ string PJSIP_Instance::add_account(string username, string password, string doma
         return ERROR_CODE_1;
     }
 
+    std::cout << ("PJSIP_Instance::add_account success") << std::endl;
     return "success";
 }
 

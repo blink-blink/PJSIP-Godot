@@ -38,6 +38,7 @@ public:
 
 	void fill_buffer();
 	void initialize_endpoint(int port, int loglvl);
+	void initialize_endpoint2(godot::String codec, int port, int loglvl);
 	void add_account(godot::String username, godot::String password, godot::String domain);
 	void set_use_pj_capture(bool b);
 	size_t make_call(godot::String uri, AudioStreamGeneratorPlayback* stream);

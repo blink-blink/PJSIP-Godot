@@ -13,9 +13,9 @@ void CallStreamPair::interpret_frames(std::string s, godot::PoolVector2Array* d)
 	//std::cout << "interpreting frames as mono" << '\n';
 
 	//debug
-	std::ofstream incoming("incoming_frames.lpcm", std::fstream::app | std::ios::binary);
-	incoming << s;
-	incoming.close();
+	//std::ofstream incoming("incoming_frames.lpcm", std::fstream::app | std::ios::binary);
+	//incoming << s;
+	//incoming.close();
 
 	for (int i = 0; i < s.length(); i += 2) {
 
@@ -43,9 +43,9 @@ void CallStreamPair::interpret_frames_stereo(std::string s, godot::PoolVector2Ar
 	//std::cout << "interpreting frames as stereo" << '\n';
 
 	//debug
-	std::ofstream incoming("incoming_frames.lpcm", std::fstream::app | std::ios::binary);
-	incoming << s;
-	incoming.close();
+	//std::ofstream incoming("incoming_frames.lpcm", std::fstream::app | std::ios::binary);
+	//incoming << s;
+	//incoming.close();
 
 	for (int i = 0; i < s.length(); i += 4) {
 
