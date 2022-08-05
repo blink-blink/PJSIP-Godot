@@ -9,7 +9,7 @@ Integration of PJSIP libraries in Godot via GDNative.
 ## How to build
 Build using `scons` and speciify the proper parameters. An example would be `scons platform=windows target=r`
 - If you're building for Windows, use `scons platform=windows` and specify target using `target=d` or `target=r`
-- If building for linux, use 'scons platform=x11` or `scons platform=linux` and specify target.
+- If building for linux, use `scons platform=x11` or `scons platform=linux` and specify target.
 
 ## Setting up the GDNative node
 This section assume you have the basic knowledge of Godot nodes. 
