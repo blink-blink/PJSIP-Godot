@@ -41,13 +41,13 @@
     <ClInclude Include="PJSIP_AudioStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PJSUA2_demo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PJSIP_Common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PJSIP_Instance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CallStreamPair.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

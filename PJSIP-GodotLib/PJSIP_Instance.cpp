@@ -2,86 +2,80 @@
 
 #include <fstream>
 
-#define ERROR_CODE_0 "Account Exists"
-#define ERROR_CODE_1 "Account Failed"
 
+#define INIT_EP(ep, codecS, port, loglvl) \
+        if (ep.libGetState() > PJSUA_STATE_CREATED) { \
+            std::cout << "Endpoint lib past created state" << '\n'; \
+            return; \
+        } \
+        try { \
+        \
+        /*register thread*/\
+        pj_thread_desc desc; \
+        pj_thread_t* this_thread;  \
+        pj_bzero(desc, sizeof(desc)); \
+        pj_thread_register("thread", desc, &this_thread); \
+        \
+        /*Init library*/\
+        EpConfig ep_cfg; \
+        ep_cfg.logConfig.level = loglvl; \
+        \
+        /*ep_cfg.medConfig.channelCount = 2; //stereo
+        ep_cfg.medConfig.audioFramePtime = 10;
+        std::cout << ep_cfg.medConfig.audioFramePtime << '\n';*/\
+        \
+        ep.libInit(ep_cfg); \
+        ep.audDevManager().setNullDev(); \
+        \
+        /*prioritize speex/8000*/\
+        string codecID = codecS; \
+        for (auto codec : ep.codecEnum2()) { \
+            int prio = 0; \
+            if (codec.codecId.find(codecID) != std::string::npos) { \
+                std::cout << codecID << " codec found" << "\n"; \
+                prio = 255; \
+            } \
+            ep.codecSetPriority(codec.codecId, prio); \
+        } \
+        \
+        /*Transport*/ \
+        TransportConfig tcfg; \
+        tcfg.port = port; \
+        ep.transportCreate(PJSIP_TRANSPORT_UDP, tcfg); \
+        \
+        /*Start library*/\
+        ep.libStart(); \
+        std::cout << "*** PJSUA2 STARTED ***" << std::endl; \
+        \
+    } \
+    catch (pj::Error err) { \
+        std::cout << "Exception: " << err.info() << std::endl; \
+    } 
 
-void init_ep(MyEndpoint* ep, std::string codec, int port, int loglvl) {
-    try {
-
-        //register thread
-        pj_thread_desc desc;
-        pj_thread_t* this_thread;
-        pj_bzero(desc, sizeof(desc));
-        pj_thread_register("thread", desc, &this_thread);
-
-        // Init library
-        EpConfig ep_cfg;
-        ep_cfg.logConfig.level = loglvl;
-        //ep_cfg.medConfig.channelCount = 2; //stereo
-        //ep_cfg.medConfig.audioFramePtime = 10;
-        //std::cout << ep_cfg.medConfig.audioFramePtime << '\n';
-        ep->libInit(ep_cfg);
-        ep->audDevManager().setNullDev();
-
-        //prioritize speex/8000
-        string codecID = codec;
-        for (auto codec : ep->codecEnum2()) {
-            int prio = 0;
-            if (codec.codecId.find(codecID) != std::string::npos) {
-                std::cout << codecID << " codec found" << "\n";
-                prio = 255;
-            }
-            ep->codecSetPriority(codec.codecId, prio);
-        }
-
-        // Transport
-        TransportConfig tcfg;
-        tcfg.port = port;
-        ep->transportCreate(PJSIP_TRANSPORT_UDP, tcfg);
-
-        // Start library
-        ep->libStart();
-        std::cout << "*** PJSUA2 STARTED ***" << std::endl;
-
-    }
-    catch (pj::Error err) {
-        std::cout << "Exception: " << err.info() << std::endl;
-    }
-}
 
 void PJSIP_Instance::initialize_endpoint(std::string codec, int port, int loglvl)
 {
-    if (ep.libGetState() > PJSUA_STATE_CREATED) {
-        std::cout << "Endpoint lib past created state" << '\n';
-        return;
-    }
-
-    init_ep(&ep, codec, port, loglvl);
+    INIT_EP(ep, codec, port, loglvl);
 }
 
 void PJSIP_Instance::initialize_endpoint(int port, int loglvl)
 {
-    if (ep.libGetState() > PJSUA_STATE_CREATED) {
-        std::cout << "Endpoint lib past created state" << '\n';
-        return;
-    }
-
-    init_ep(&ep, "speex/16000", port, loglvl);
+    INIT_EP(ep, "speex/1600", port, loglvl);
 }
 
 string PJSIP_Instance::add_account(string username, string password, string domain, PJSIP_AudioStream* ASOwner)
 {
     std::cout << ("PJSIP_Instance::add_account: " + username) << std::endl;
 
-    //debug
-    //std::ofstream push;
-    //push.open("pushed_frames.lpcm");
-    //push.close();
+#ifndef NDEBUG
+    std::ofstream push;
+    push.open("pushed_frames.lpcm");
+    push.close();
 
-    //std::ofstream incoming;
-    //incoming.open("incoming_frames.lpcm");
-    //incoming.close();
+    std::ofstream incoming;
+    incoming.open("incoming_frames.lpcm");
+    incoming.close();
+#endif
 
     //register thread
     pj_thread_desc desc;

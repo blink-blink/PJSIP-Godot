@@ -54,9 +54,6 @@ void MyCall::onCallMediaState(OnCallMediaStateParam& prm)
 
     CallInfo ci = getInfo();
     AudioMedia aud_med;
-    //AudioMedia& play_dev_med =
-    //    MyEndpoint::instance().audDevManager().getPlaybackDevMedia();
-    //AudioMedia& cap_dev_med = Endpoint::instance().audDevManager().getCaptureDevMedia();
 
     try {
         // Get the first audio media
@@ -67,15 +64,7 @@ void MyCall::onCallMediaState(OnCallMediaStateParam& prm)
         return;
     }
 
-    //// This will connect the wav file to the call audio media
-    //cap_dev_med.adjustRxLevel(3);
-    //cap_dev_med.startTransmit(aud_med);
-
-
-    //// And this will connect the call audio media to the sound device/speaker
-    //aud_med.startTransmit(play_dev_med);
-    //play_dev_med.adjustRxLevel(0);
-
+    //this will connect the stream to audio media
     if (!pcm_stream) {
         pcm_stream = new AudioMediaStream();
         pcm_stream->createMediaStream(ci.id);
@@ -83,7 +72,7 @@ void MyCall::onCallMediaState(OnCallMediaStateParam& prm)
         //pcm_stream->startTransmit(play_dev_med);
     }
 
-    //this will connect the call audio media to the stream
+    //this will connect the call audio media to the capture
     if (!pcm_capture) {
         std::cout << "audio media connected to stream" << std::endl;
         pcm_capture = new AudioMediaCapture();
@@ -101,7 +90,6 @@ void MyCall::setCallStreamPair(CallStreamPair* csp)
 
 void MyCall::putFrame(char* chunk, size_t datasize)
 {
-    //std::cout << "outgoing frame: " << chunk << "of size: " << strlen(chunk) <<std::endl;
     if (pcm_stream) {
         pcm_stream->putFrame(chunk, datasize);
     }
@@ -110,8 +98,6 @@ void MyCall::putFrame(char* chunk, size_t datasize)
 void MyCall::putFrameAsString(std::string s) {
     if (pcm_stream) {
         pcm_stream->putFrameAsString(s);
-
-        //std::cout << "frames pushed to stream" << '\n';
     }
 }
 

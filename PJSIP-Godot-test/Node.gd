@@ -13,7 +13,7 @@ var phase = 0
 var checkerTimer = 0
 var sample_rate = 16000
 
-#this is a pointer casted as uint8_t
+#call_idx of calls
 var outgoing_call = null
 var incoming_call = null
 
@@ -99,12 +99,6 @@ func stream_capture(params: Array):
 			#pjsip.push_frame(buffer, call_idx)
 			pjsip.push_frame_stereo(buffer, call_idx)
 			frames_available -= max_frame_length
-		
-		#print("frames: ",frames_available)
-#		if frames_available >= max_frame_length:
-#			var buffer = aec.get_buffer(max_frame_length)
-#			#pjsip.push_frame(buffer, call_idx)
-#			pjsip.push_frame_stereo(buffer, call_idx)
 		
 		var msec_taken = OS.get_system_time_msecs() - msec_start
 		if msec_taken*1000 < usec_delay:

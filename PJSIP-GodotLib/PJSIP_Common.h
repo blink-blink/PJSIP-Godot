@@ -1,20 +1,9 @@
+#include "Common.h"
 #include <pjsua2.hpp>
 #include <iostream>
 #include <pj/file_access.h>
 
-#define CHECK(op)   do { \
-			status = op; \
-			if (status != PJ_SUCCESS) { \
-			    err(#op, status); \
-			    return status; \
-			} \
-		    } \
-		    while (0)
-
-#define THIS_FILE 	"pjsua2_demo.cpp"
-
 using namespace pj;
-#define USE_TEST 3
 
 struct CallStreamPair;
 class PJSIP_AudioStream;
@@ -72,18 +61,73 @@ public:
             delete pcm_stream;
     }
 
+    /**
+    * getters
+    */
     size_t get_idx();
+
+
+    /**
+    * Returns MyCall with the specified call_id
+    */
     static MyCall* calls_lookup(size_t call_id);
+
+
+    /**
+    * called on call state. refer to PJSIP Documentation for more info, 
+    * https://www.pjsip.org/docs/book-latest/html/index.html
+    */
     virtual void onCallState(OnCallStateParam& prm);
+
+
+    /**
+    * Refer to PJSIP Documentation for more info, 
+    * https://www.pjsip.org/docs/book-latest/html/index.html
+    */
     virtual void onCallTransferRequest(OnCallTransferRequestParam& prm);
+
+
+    /**
+    * Refer to PJSIP Documentation for more info, 
+    * https://www.pjsip.org/docs/book-latest/html/index.html
+    */
     virtual void onCallReplaced(OnCallReplacedParam& prm);
+    
+    
+    /**
+    * Refer to PJSIP Documentation for more info,
+    * https://www.pjsip.org/docs/book-latest/html/index.html
+    */
     virtual void onCallMediaState(OnCallMediaStateParam& prm);
 
+
+    /**
+    * Sets the CallStreampPair this call is specified
+    */
     void setCallStreamPair(CallStreamPair* csp);
 
+
+    /**
+    * calls on the modified PJLIB Library method, putFrame().
+    */
     void putFrame(char* chunk, size_t datasize);
+
+
+    /**
+    * calls on the modified PJLIB Library method, putFrameAsString().
+    */
     void putFrameAsString(std::string s);
+
+
+    /**
+    * calls on the modified PJLIB Library method, getFrames().
+    */
     void getFrames(char** s, size_t* datasize);
+
+
+    /**
+    * calls on the modified PJLIB Library method, getFrameAsString().
+    */
     std::string getFramesAsString();
 };
 
@@ -115,9 +159,24 @@ public:
         }
     }
 
+
+    /**
+    * Removes a call from the call array. Not used
+    */
     void removeCall(Call* call);
 
+
+    /**
+    * Refer to PJSIP Documentation for more info,
+    * https://www.pjsip.org/docs/book-latest/html/index.html
+    */
     void _onRegState(OnRegStateParam& prm);
+
+
+    /**
+    * Refer to PJSIP Documentation for more info,
+    * https://www.pjsip.org/docs/book-latest/html/index.html
+    */
     void _onIncomingCall(OnIncomingCallParam& iprm);
 
     virtual void onRegState(OnRegStateParam& prm) {

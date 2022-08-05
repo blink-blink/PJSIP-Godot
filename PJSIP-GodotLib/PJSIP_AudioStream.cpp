@@ -1,5 +1,4 @@
 #include "CallStreamPair.h"
-//#include "PJSUA2_demo.h"
 #include <fstream>
 
 void PJSIP_AudioStream::_register_methods()
@@ -21,9 +20,6 @@ void PJSIP_AudioStream::_register_methods()
 	register_method("push_frame2", &PJSIP_AudioStream::push_frame);
 	register_method("push_frame_stereo", &PJSIP_AudioStream::push_frame_stereo);
 	register_method("buffer_incoming_call_to_stream", &PJSIP_AudioStream::buffer_incoming_call_to_stream);
-
-	//properties
-	register_property("username", &PJSIP_AudioStream::username, godot::String());
 
 	//signals
 	register_signal<PJSIP_AudioStream>((char*)"on_incoming_call", "call_idx", GODOT_VARIANT_TYPE_INT);
@@ -101,33 +97,24 @@ void PJSIP_AudioStream::call_to_buffer_stream(MyCall* call)
 void PJSIP_AudioStream::fill_buffer()
 {
 	if (callStreamPair.empty()) {
-		//std::cout << "Call Stream Pair empty \n";
 		return;
 	}
+
 	//for every calls, stream to corresponding godot::audiostream
-	//std::cout << "size: " << callStreamPair.size() << '\n';
 	for (auto it = callStreamPair.begin(); it != callStreamPair.end();)
 	{
-		//std::cout << "idx at: " << it - callStreamPair.begin() << '\n';
-
 		CallStreamPair* csp = *it;
 		
 		if (!csp->call){
-			std::cout << "Erasing it\n";
 			it = callStreamPair.erase(it);
-
-			std::cout << "Deleting CallStreamPair \n";
 			delete csp;
-			std::cout << "continuing...\n";
 			continue;
 		}
 
-		//std::cout << "calling frames_to_stream \n";
 		csp->frames_to_stream();
 		++it;
 		
 	}
-	//std::cout << "new size: " << callStreamPair.size() << '\n';
 }
 
 void PJSIP_AudioStream::initialize_endpoint(int port, int loglvl)
@@ -178,16 +165,12 @@ void PJSIP_AudioStream::push_frame(godot::PoolVector2Array frame, size_t call_id
 	MyCall* call = MyCall::calls_lookup(call_idx);
 	if (!call) return;
 
-	//std::cout << "pushing frames \n";
-
 	std::string s;
-
-	//****************** direct push *********************//
 
 	for (int i = 0; i < frame.size(); i++) 
 	{
 
-		//since mono just get x
+		//since mono just get average of x,y
 		float fc = (frame[i].x + frame[i].y) / 2;
 
 		// float 32 to PCM16
@@ -201,13 +184,12 @@ void PJSIP_AudioStream::push_frame(godot::PoolVector2Array frame, size_t call_id
 
 	}
 
-	//std::cout << "string built \n";
-
-	//debug
-	//std::ofstream push("pushed_frames.lpcm", std::fstream::app | std::ios::binary);
-	//push << s;
-	////output.write(s.c_str(), sizeof(char) * s.length());
-	//push.close();
+#ifndef NDEBUG
+	std::ofstream push("pushed_frames.lpcm", std::fstream::app | std::ios::binary);
+	push << s;
+	//output.write(s.c_str(), sizeof(char) * s.length());
+	push.close();
+#endif
 
 	//push frames to call
 	call->putFrameAsString(s);
@@ -226,33 +208,27 @@ void PJSIP_AudioStream::push_frame2(godot::PoolByteArray frame, size_t call_idx)
 		s += frame[i];
 
 	}
-	//std::cout << "string built \n";
+
 	//push frames to call
 	call->putFrameAsString(s);
 }
 
 void PJSIP_AudioStream::push_frame_stereo(godot::PoolVector2Array frame, size_t call_idx)
 {
-	//std::cout << "pushing frames stereo \n";
 	MyCall* call = MyCall::calls_lookup(call_idx);
 	if (!call) return;
 
 	std::string s;
-	//std::cout << "===buffer: " << frame.size() << '\n';
 
 	for (int i = 0; i < frame.size(); i ++) {
 
 		//since stereo get xy
 		float fc1 = frame[i].x;
 		float fc2 = frame[i].y;
-		
-		//std::cout << fc1 << fc2 << '\n';
 
 		// float 32 to PCM
 		int16_t wc1 = (int16_t)(fc1 * 0x7fff);
 		int16_t wc2 = (int16_t)(fc2 * 0x7fff);
-
-		//std::cout << wc1 << wc2 << '\n';
 
 		//append string (little endian)
 		char c = (wc1 >> 0) & 0xFF;
@@ -267,13 +243,12 @@ void PJSIP_AudioStream::push_frame_stereo(godot::PoolVector2Array frame, size_t 
 		s += c;
 	}
 
-	//std::cout << "frame built: " << s << '\n';
-
-	//debug
-	//std::ofstream push("pushed_frames.lpcm", std::fstream::app | std::ios::binary);
-	//push << s;
-	////output.write(s.c_str(), sizeof(char) * s.length());
-	//push.close();
+#ifndef NDEBUG
+	std::ofstream push("pushed_frames.lpcm", std::fstream::app | std::ios::binary);
+	push << s;
+	//output.write(s.c_str(), sizeof(char) * s.length());
+	push.close();
+#endif
 
 	//push frames to call
 	call->putFrameAsString(s);
@@ -284,6 +259,6 @@ void PJSIP_AudioStream::add_account(godot::String username, godot::String passwo
 	pi->add_account(username.alloc_c_string(), password.alloc_c_string(), domain.alloc_c_string(), this);
 }
 
-void PJSIP_AudioStream::set_use_pj_capture(bool b)
-{
-}
+//void PJSIP_AudioStream::set_use_pj_capture(bool b)
+//{
+//}

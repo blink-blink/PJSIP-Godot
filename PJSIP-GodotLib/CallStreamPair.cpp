@@ -10,19 +10,17 @@ void CallStreamPair::on_call_disconnect()
 void CallStreamPair::interpret_frames(std::string s, godot::PoolVector2Array* d)
 {
 	//mono
-	//std::cout << "interpreting frames as mono" << '\n';
 
-	//debug
-	//std::ofstream incoming("incoming_frames.lpcm", std::fstream::app | std::ios::binary);
-	//incoming << s;
-	//incoming.close();
+#ifndef NDEBUG
+	std::ofstream incoming("incoming_frames.lpcm", std::fstream::app | std::ios::binary);
+	incoming << s;
+	incoming.close();
+#endif
 
 	for (int i = 0; i < s.length(); i += 2) {
 
-		/*convert to signed PCM 16*/
 		int16_t wc = ((s[i + 1] - 0x7f) << 8);
-		//wc += (s[i] - 0x7f) - 0x7fff;
-		wc += (s[i] - 0xff) - 0x7fff;
+		wc += (s[i] - 0x7f) - 0x7fff;
 
 		/*Convert PCM to float 32*/
 		float fc = ((float)wc) / (float)0x7fff;
@@ -40,16 +38,15 @@ void CallStreamPair::interpret_frames(std::string s, godot::PoolVector2Array* d)
 void CallStreamPair::interpret_frames_stereo(std::string s, godot::PoolVector2Array* d)
 {
 	//stereo
-	//std::cout << "interpreting frames as stereo" << '\n';
 
-	//debug
-	//std::ofstream incoming("incoming_frames.lpcm", std::fstream::app | std::ios::binary);
-	//incoming << s;
-	//incoming.close();
+#ifndef NDEBUG
+	std::ofstream incoming("incoming_frames.lpcm", std::fstream::app | std::ios::binary);
+	incoming << s;
+	incoming.close();
+#endif
 
 	for (int i = 0; i < s.length(); i += 4) {
 
-		/*convert to signed PCM 16*/
 		int16_t wc1 = ((s[i + 3] - 0x7f) << 8);
 		wc1 += (s[i + 2] - 0x7f) - 0x7fff;
 
@@ -73,16 +70,13 @@ void CallStreamPair::interpret_frames_stereo(std::string s, godot::PoolVector2Ar
 void CallStreamPair::frames_to_stream() 
 {
 	if (!call) return;
-	//else std::cout << "call exists \n";
 
 	if (!call->isActive()) return;
-	//else std::cout << "call is active \n";
 
 	if (!call->hasMedia()) {
 		Godot::print("no media", &stream);
 		return;
 	}
-	//Godot::print("filling buffer", &stream);
 
 	/* get frames */
 	std::string s = call->getFramesAsString();
