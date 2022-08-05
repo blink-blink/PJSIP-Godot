@@ -23,10 +23,10 @@ func _ready():
 	#add account
 	var username = "801";
 	var password = "IDm2xg64DCER3j6arR22Tob1d";
-	var domain = "192.168.195.1:5060";
-	var port = 29801;
-	#var domain = "localhost";
-	#var port = 5060;
+#	var domain = "192.168.195.1:5060";
+#	var port = 29801;
+	var domain = "localhost";
+	var port = 5060;
 
 	print("initalizing endpoint...");
 	#pjsip.initialize_endpoint(port,1)
@@ -52,8 +52,8 @@ func _unhandled_input(event):
 		#print(asp.stream.get_data())
 
 func call_test():
-	var call_uri = "sip:801@192.168.195.1:5060";
-	#var call_uri = "sip:801@localhost";
+	#var call_uri = "sip:801@192.168.195.1:5060";
+	var call_uri = "sip:801@localhost";
 
 	print("testing call on uri: "+call_uri);
 	
